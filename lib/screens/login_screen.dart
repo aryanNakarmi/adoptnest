@@ -23,15 +23,16 @@ class LoginScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo')
-              ],
-            ),
-            const Text(
+                Image.asset('assets/images/logo1.png', height: 50,),
+              const Text(
               "AdoptNest",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 28, fontWeight: FontWeight.bold),
             ),
+              ],
+            ),
+            
             const SizedBox(height: 40),
             const Text(
               "Welcome Back!",
