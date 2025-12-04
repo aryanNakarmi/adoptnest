@@ -8,6 +8,9 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+
+  PageController _pageController = PageController();
+  int currentPage = 0;
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
