@@ -31,9 +31,9 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Image.asset('assets/images/logo1.png', height:120,width: 120,),
               SizedBox(height: 20,),
-              Text("AdoptNest",style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,),
+              Text("AdoptNest",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,)),
             ],
           ),
         )
