@@ -1,5 +1,7 @@
+import 'package:adoptnest/screens/login_screen.dart';
 import 'package:adoptnest/widgets/onboarding_page.dart';
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -9,6 +11,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+
+  final PageController _controller = PageController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,6 +20,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           //horizontal scrollabe page
           PageView(
+
+            controller: _controller,
             children: const [
               OnboardingPage(
                 image: 'assets/images/onboarding1.png',
@@ -36,10 +42,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 
               )
             ]
-              )
+          ),
 
-            ],
-          )
+          //skip button
+          Positioned(
+            top: 50,
+            right: 20,
+            child: GestureDetector(
+              onTap: () {
+                //to login page
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+              },
+              child: const Text("Skip"),
+            )),
+
+            //dot navigation smoothpage indicator
+            Positioned(
+              bottom: 200,
+              left: 0,
+              right: 0,
+              child: Center(
+                
+                child: SmoothPageIndicator(
+                  controller: _controller, count: 3,
+                  effect: WormEffect(
+                    dotHeight: 10,
+                    dotWidth: 20,
+                    spacing: 8,
+                    activeDotColor: Colors.red,
+                    dotColor: Colors.grey.shade300,
+                  ),
+                  ),
+              ))
+          
+        ],
+      )
         
       
     );

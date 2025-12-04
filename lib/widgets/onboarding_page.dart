@@ -17,9 +17,9 @@ class OnboardingPage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(padding: EdgeInsetsGeometry.only(top:150),
+            Padding(padding: EdgeInsetsGeometry.only(top:170),
             child: 
-            Image.asset(image,height:350,),
+            Image.asset(image,height:290,),
             ),
             Text(title,
             style: const TextStyle(
