@@ -13,6 +13,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final PageController _controller = PageController();
+  int currentPage = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,19 +27,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               OnboardingPage(
                 image: 'assets/images/onboarding1.png',
                 title: 'Find your new companion', 
-                subtitle: 'Find your perfect companion and give them a loving home', 
+                subtitle: 'Find your perfect companion and give them a loving home',
+                bgColor: Colors.green,
+                buttonColor: Colors.blue,
+                dotColor: Colors.blue,
+                skipVisible: true,
+                buttonText: "Next"
+                
                 
               ),
               OnboardingPage(
                 image: 'assets/images/onboarding3.png',
                 title: 'Adopt Easily', 
                 subtitle: 'Connect with adopters and shelters', 
+                bgColor: Colors.green,
+                buttonColor: Colors.blue,
+                dotColor: Colors.blue,
+                skipVisible: true,
+                buttonText: "Next"
+                
                 
               ),
               OnboardingPage(
                 image: 'assets/images/onboarding2.png',
                 title: 'Connect. Adopt. Care.', 
                 subtitle: 'Find your new bestfriend and give them a forever home', 
+                bgColor: Colors.green,
+                buttonColor: Colors.blue,
+                dotColor: Colors.blue,
+                skipVisible: false,
+                buttonText: "Get Started"
+                
                 
               )
             ]
@@ -58,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             //dot navigation smoothpage indicator
             Positioned(
-              bottom: 200,
+              bottom: 170,
               left: 0,
               right: 0,
               child: Center(
@@ -73,7 +92,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     dotColor: Colors.grey.shade300,
                   ),
                   ),
-              ))
+              )
+              ),
+            
+            //Button
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 90,
+              child: Center(
+                
+                child: ElevatedButton(
+                  onPressed: (){},
+                  child: Icon(Icons.arrow_right, ),
+                  )),
+            )
+            
+
           
         ],
       )

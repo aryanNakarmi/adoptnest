@@ -7,7 +7,7 @@ class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key,
   required this.image,
   required this.title,
-  required this.subtitle,
+  required this.subtitle, required MaterialColor ,
   });
 
   @override
@@ -34,7 +34,8 @@ class OnboardingPage extends StatelessWidget {
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
-            )
+            ),
+            
         
             
           ],
