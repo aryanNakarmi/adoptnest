@@ -1,3 +1,4 @@
+import 'package:adoptnest/widgets/onboarding_page.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -15,17 +16,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           //horizontal scrollabe page
           PageView(
-            children: [
-              Column(
-                children: [
-                  Image.asset('assets/images/onboarding1.png')
-                ],
+            children: const [
+              OnboardingPage(
+                image: 'assets/images/onboarding1.png',
+                title: 'Find your new companion', 
+                subtitle: 'Find your perfect companion and give them a loving home', 
+                
+              ),
+              OnboardingPage(
+                image: 'assets/images/onboarding3.png',
+                title: 'Adopt Easily', 
+                subtitle: 'Connect with adopters and shelters', 
+                
+              ),
+              OnboardingPage(
+                image: 'assets/images/onboarding2.png',
+                title: 'Connect. Adopt. Care.', 
+                subtitle: 'Find your new bestfriend and give them a forever home', 
+                
+              )
+            ]
               )
 
             ],
           )
-        ],
-      )
+        
+      
     );
   }
 }
