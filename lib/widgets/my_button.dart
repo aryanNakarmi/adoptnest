@@ -6,20 +6,30 @@ class MyButton extends StatelessWidget {
 
   final String text;
   final VoidCallback onPressed;
-  final Color backgroundColor;
-  final Color textColor;
-  final double widthFactor; // fraction of screen width
-  final double height;
+  
   const MyButton({super.key, 
   required this.text, 
   required this.onPressed, 
-  this.backgroundColor = const Color(0xFFFF8C69), 
-  this.textColor = Colors.white, 
-  required this.widthFactor, 
-  required this.height});
+ 
+
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SizedBox(
+      width: MediaQuery.of(context).size.width* 0.8,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor:  const Color(0xFFFF8C69), 
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+        ),
+        onPressed: onPressed,
+        child: Text(text,style:TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+        ),)
+        ),
+    );
   }
 }
