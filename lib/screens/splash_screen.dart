@@ -11,24 +11,25 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   //for splash screen time out
-  @override
-  void initState(){
-    super.initState();
+  // @override
+  // void initState(){
+  //   super.initState();
 
-    Timer(Duration(seconds: 3),
-    (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>OnboardingScreen()));
-    });
-  }
+  //   Timer(Duration(seconds: 3),
+  //   (){
+  //     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>OnboardingScreen()));
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: Color(0xFF8B5E3C),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.pets),
+              Image.asset('assets/images/logo1.png'),
               Text("AdoptNest"),
             ],
           ),
