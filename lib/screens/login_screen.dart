@@ -9,99 +9,89 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        alignment: Alignment.topCenter, // ,
-
-      child: Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left:20,right:20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 100,),
-            Text(
+
+            const SizedBox(height: 50),
+            //for title and logo
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo')
+              ],
+            ),
+            const Text(
               "AdoptNest",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),
-            ), 
-            SizedBox(height: 50,),
-            Text(
+              style: TextStyle(
+                  fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 40),
+            const Text(
               "Welcome Back!",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold),
             ),
-
-            SizedBox(height: 10,),
-            Text("Login to your account",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, color: Colors.grey),
+            const SizedBox(height: 10),
+            Text(
+              "Login to your account",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
             ),
-
-            SizedBox(height: 20,),
+            const SizedBox(height: 30),
             MyTextfield(
-              onChanged: (value){
-                //later
-              } ,
-              hintText: "Email", 
+              onChanged: (value) {},
+              hintText: "Email",
               controller: emailController,
-              prefixIcon: Icon(Icons.email)
-              ),
-
-              SizedBox(height: 20,),
-
-               MyTextfield(
-              controller: passwordController,
+              prefixIcon: const Icon(Icons.email),
+            ),
+            const SizedBox(height: 20),
+            MyTextfield(
+              onChanged: (value) {},
               hintText: "Password",
+              controller: passwordController,
               isPassword: true,
               prefixIcon: const Icon(Icons.lock),
-              onChanged: (value) {
-                // later
-                },
-              ),
-              const SizedBox(height: 30),
-              
-
-              //Login Button
-              MyButton(text: "Login", onPressed: (){
+            ),
+            const SizedBox(height: 30),
+            MyButton(
+              text: "Login",
+              onPressed: () {
                 String email = emailController.text.trim();
-                String Password = passwordController.text.trim();
-
-                //later
-              }
-              ),
-
-              //Signup Page
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Don't have an account?"),
-                  TextButton(onPressed: (){
+                String password = passwordController.text.trim();
+                // login logic here
+              },
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Don't have an account?"),
+                TextButton(
+                  onPressed: () {
                     Navigator.push(
-                      context, MaterialPageRoute(builder: (context)=>SignupScreen()
-                      )
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SignupScreen()),
                     );
                   },
-                  child: Text("Sign Up", style: TextStyle(color: Color(0xffff8c690)),))
-                ],
-              )
+                  child: const Text(
+                    "Sign Up",
+                    style: TextStyle(color: Color(0xFFFF8C69)),
+                  ),
+                ),
+              ],
+            ),
           ],
-        ), 
-      )
-         )
-         )
-      )
+        ),
+      ),
     );
   }
 }
