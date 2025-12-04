@@ -100,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               bottom: 90,
               child: Center(
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8, //80% of the display 
+                  width: MediaQuery.of(context).size.width * 0.8, //80% of the display
                   child: ElevatedButton(
                   
                     onPressed: (){
