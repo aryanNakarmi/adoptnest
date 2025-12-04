@@ -1,3 +1,5 @@
+import 'package:adoptnest/screens/signup_screen.dart';
+import 'package:adoptnest/widgets/my_button.dart';
 import 'package:adoptnest/widgets/my_textfield.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,14 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
+        
+      padding: const EdgeInsets.all(20),
+      child: Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -41,12 +51,53 @@ class LoginScreen extends StatelessWidget {
                 //later
               } ,
               hintText: "Email", 
-              controller: emailController
-              prefixIcon)
+              controller: emailController,
+              prefixIcon: Icon(Icons.email)
+              ),
 
+              SizedBox(height: 20,),
+
+               MyTextfield(
+              controller: passwordController,
+              hintText: "Password",
+              isPassword: true,
+              prefixIcon: const Icon(Icons.lock),
+              onChanged: (value) {
+                // later
+                },
+              ),
+              const SizedBox(height: 30),
+              
+
+              //Login Button
+              MyButton(text: "Login", onPressed: (){
+                String email = emailController.text.trim();
+                String Password = passwordController.text.trim();
+
+                //later
+              }
+              ),
+
+              //Signup Page
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have an account?"),
+                  TextButton(onPressed: (){
+                    Navigator.push(
+                      context, MaterialPageRoute(builder: (context)=>SignupScreen()
+                      )
+                    );
+                  },
+                  child: Text("Sign Up", style: TextStyle(color: Color(0xffff8c690)),))
+                ],
+              )
           ],
-        ),
+        ), 
       )
+         )
+         )
     );
   }
 }
