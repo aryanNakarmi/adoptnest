@@ -14,6 +14,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final PageController _controller = PageController();
   int currentPage = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +85,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     dotHeight: 10,
                     dotWidth: 20,
                     spacing: 8,
-                    activeDotColor: Colors.red,
+                    activeDotColor: currentPage == 2 ? const Color(0xFF13ECC8) // Get Started
+                     : const Color(0xFFFF8C69),
                     dotColor: Colors.grey.shade300,
                   ),
                   ),
@@ -97,11 +99,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               right: 0,
               bottom: 90,
               child: Center(
-                
-                child: ElevatedButton(
-                  onPressed: (){},
-                  child: Icon(Icons.arrow_right, ),
-                  )),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8, //80% of the display 
+                  child: ElevatedButton(
+                  
+                    onPressed: (){
+                      //when page 3 --> go to login 
+                      //or else slide next page
+                      if(currentPage==2){
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context)=> LoginScreen())
+                        );
+                      }else{
+                        _controller.nextPage(
+                          duration: const Duration(milliseconds: 500), curve: Curves.easeInOutExpo
+                          );
+                      }
+                    },
+                        style:ElevatedButton.styleFrom(
+                  
+                        backgroundColor: currentPage ==2? const Color(0xFF13ECC8) // Get Started
+                       : const Color(0xFFFF8C69), 
+                       //Next
+                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        
+                      ),
+
+                    child: Text(currentPage == 2 ? "Get Started": "Next" ,style: TextStyle(fontSize: 18, color: Colors.white),),
+                    ),
+                )),
             )
             
 
