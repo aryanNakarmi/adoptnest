@@ -25,15 +25,14 @@ class MyTextfield extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        border: const OutlineInputBorder()
+        border:  OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+        fillColor: Colors.grey
       ),
       onChanged: onChanged,
-      validator:(value){
-        if(value!.isEmpty){
-          return 'Please enter some text';
-        }
-        return null;
-      },
+      
     );
   }
 }
