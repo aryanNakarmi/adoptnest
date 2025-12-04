@@ -23,16 +23,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           PageView(
 
             controller: _controller,
-            children: const [
+            onPageChanged: (index) {
+              setState(() {
+                currentPage = index; //to keep track of the page
+              });
+            },
+
+            children: [
               OnboardingPage(
                 image: 'assets/images/onboarding1.png',
                 title: 'Find your new companion', 
                 subtitle: 'Find your perfect companion and give them a loving home',
-                bgColor: Colors.green,
-                buttonColor: Colors.blue,
-                dotColor: Colors.blue,
-                skipVisible: true,
-                buttonText: "Next"
+                
                 
                 
               ),
@@ -40,11 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 image: 'assets/images/onboarding3.png',
                 title: 'Adopt Easily', 
                 subtitle: 'Connect with adopters and shelters', 
-                bgColor: Colors.green,
-                buttonColor: Colors.blue,
-                dotColor: Colors.blue,
-                skipVisible: true,
-                buttonText: "Next"
+               
                 
                 
               ),
@@ -52,11 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 image: 'assets/images/onboarding2.png',
                 title: 'Connect. Adopt. Care.', 
                 subtitle: 'Find your new bestfriend and give them a forever home', 
-                bgColor: Colors.green,
-                buttonColor: Colors.blue,
-                dotColor: Colors.blue,
-                skipVisible: false,
-                buttonText: "Get Started"
+                
                 
                 
               )
@@ -64,6 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
 
           //skip button
+        if(currentPage!=2)
           Positioned(
             top: 50,
             right: 20,
@@ -74,6 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
               child: const Text("Skip"),
             )),
+        
 
             //dot navigation smoothpage indicator
             Positioned(
