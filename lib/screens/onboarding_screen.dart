@@ -10,6 +10,15 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Stack(
+        children: [
+          //horizontal scrollabe page
+          PageView(
+            children: [],
+          )
+        ],
+      )
+    );
   }
 }
