@@ -15,7 +15,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           //horizontal scrollabe page
           PageView(
-            children: [],
+            children: [
+              Column(
+                children: [
+                  Image.asset('assets/images/onboarding1.png')
+                ],
+              )
+
+            ],
           )
         ],
       )
