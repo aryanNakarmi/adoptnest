@@ -56,7 +56,8 @@ class SignupScreen extends StatelessWidget {
               hintText: "Name",
               controller: nameController,
               prefixIcon: const Icon(Icons.email),
-              borderColor: Color(0xFF13ECC8)
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
             ),
             const SizedBox(height: 20),
             MyTextfield(
@@ -64,7 +65,8 @@ class SignupScreen extends StatelessWidget {
               hintText: "Email",
               controller: emailController,
               prefixIcon: const Icon(Icons.email),
-              borderColor: Color(0xFF13ECC8)
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
             ),
             const SizedBox(height: 20),
             MyTextfield(
@@ -72,6 +74,8 @@ class SignupScreen extends StatelessWidget {
               hintText: "Password",
               controller: passwordController,
               prefixIcon: const Icon(Icons.email),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
               
             ),
             const SizedBox(height: 20),
@@ -93,6 +97,7 @@ class SignupScreen extends StatelessWidget {
                 String password = passwordController.text.trim();
                 String phone = phoneController.text.trim(); // login logic here
               },
+              btnColor: Color(0xFF13ECC8),
               
             ),
             const SizedBox(height: 20),

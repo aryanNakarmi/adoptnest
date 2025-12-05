@@ -9,6 +9,7 @@ class MyTextfield extends StatelessWidget {
   final bool isPassword;
   final Icon? prefixIcon;
   final Color borderColor;
+  final Color enabledBorderColor;
 
   const MyTextfield({super.key,
   required this.onChanged,
@@ -16,7 +17,8 @@ class MyTextfield extends StatelessWidget {
   required this.controller,
   this.isPassword = false,
   this.prefixIcon,
-  this.borderColor = const Color(0xFFFF8C69),
+  this.borderColor = const Color(0xFFFF8C69),  this.enabledBorderColor= const Color(0xFFFFCBB5),
+
   });
 
   @override
@@ -33,7 +35,7 @@ class MyTextfield extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide(
-            color: Color(0xFFFFCBB5)), // Border color when not focused
+            color: enabledBorderColor), // Border color when not focused
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),

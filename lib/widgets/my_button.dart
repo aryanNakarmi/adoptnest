@@ -6,10 +6,11 @@ class MyButton extends StatelessWidget {
 
   final String text;
   final VoidCallback onPressed;
+  final Color btnColor;
   
   const MyButton({super.key, 
   required this.text, 
-  required this.onPressed, 
+  required this.onPressed,  this.btnColor= const Color(0xFFFF8C69), 
  
 
   });
@@ -21,7 +22,7 @@ class MyButton extends StatelessWidget {
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor:  const Color(0xFFFF8C69), 
+          backgroundColor:  btnColor, 
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
         ),
         onPressed: onPressed,
