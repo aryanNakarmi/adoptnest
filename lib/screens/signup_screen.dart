@@ -48,13 +48,15 @@ class SignupScreen extends StatelessWidget {
               "Join our family and find your new best friend",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+    
             ),
             const SizedBox(height: 30),
             MyTextfield(
               onChanged: (value) {},
               hintText: "Name",
-              controller: emailController,
+              controller: nameController,
               prefixIcon: const Icon(Icons.email),
+              borderColor: Color(0xFF13ECC8)
             ),
             const SizedBox(height: 20),
             MyTextfield(
@@ -67,14 +69,14 @@ class SignupScreen extends StatelessWidget {
             MyTextfield(
               onChanged: (value) {},
               hintText: "Password",
-              controller: emailController,
+              controller: passwordController,
               prefixIcon: const Icon(Icons.email),
             ),
             const SizedBox(height: 20),
             MyTextfield(
               onChanged: (value) {},
               hintText: "Number",
-              controller: passwordController,
+              controller: phoneController,
               isPassword: true,
               prefixIcon: const Icon(Icons.lock),
             ),
@@ -85,9 +87,9 @@ class SignupScreen extends StatelessWidget {
                 String name = nameController.text.trim();
                 String email = emailController.text.trim();
                 String password = passwordController.text.trim();
-                String phone = phoneController.text.trim();
-                // login logic here
+                String phone = phoneController.text.trim(); // login logic here
               },
+              
             ),
             const SizedBox(height: 20),
             Row(
@@ -104,7 +106,7 @@ class SignupScreen extends StatelessWidget {
                   },
                   child: const Text(
                     "Login",
-                    style: TextStyle(color: Color(0xFFFF8C69)),
+                    style: TextStyle(color: Color(0xFF13ECC8)),
                   ),
                 ),
               ],
