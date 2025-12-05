@@ -37,18 +37,25 @@ class SignupScreen extends StatelessWidget {
             
             const SizedBox(height: 40),
             const Text(
-              "",
+              "Create Your Account",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Text(
-              "Login to your account",
+              "Join our family and find your new best friend",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 30),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Name",
+              controller: emailController,
+              prefixIcon: const Icon(Icons.email),
+            ),
+            const SizedBox(height: 20),
             MyTextfield(
               onChanged: (value) {},
               hintText: "Email",
@@ -59,6 +66,13 @@ class SignupScreen extends StatelessWidget {
             MyTextfield(
               onChanged: (value) {},
               hintText: "Password",
+              controller: emailController,
+              prefixIcon: const Icon(Icons.email),
+            ),
+            const SizedBox(height: 20),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Number",
               controller: passwordController,
               isPassword: true,
               prefixIcon: const Icon(Icons.lock),
