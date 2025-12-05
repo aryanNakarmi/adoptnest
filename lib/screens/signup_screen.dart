@@ -55,7 +55,7 @@ class SignupScreen extends StatelessWidget {
               onChanged: (value) {},
               hintText: "Name",
               controller: nameController,
-              prefixIcon: const Icon(Icons.email),
+              prefixIcon: const Icon(Icons.person),
               borderColor: Color(0xFF13ECC8),
               enabledBorderColor :const Color(0xFFB2FFF2),
             ),
