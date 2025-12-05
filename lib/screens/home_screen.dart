@@ -16,9 +16,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: SizedBox(
-          height: 50,
-          width: 70,
+          height: 100,
+          width: 200,
+          
           child: Card(
+          
              elevation: 5,
             child: Text("This is Home", style: TextStyle(fontWeight: FontWeight.bold),
             ),
