@@ -96,6 +96,8 @@ class SignupScreen extends StatelessWidget {
                 String email = emailController.text.trim();
                 String password = passwordController.text.trim();
                 String phone = phoneController.text.trim(); // login logic here
+
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
               },
               btnColor: Color(0xFF13ECC8),
               
