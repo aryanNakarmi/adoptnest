@@ -1,3 +1,4 @@
+import 'package:adoptnest/screens/home_screen.dart';
 import 'package:adoptnest/screens/signup_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
 import 'package:adoptnest/widgets/my_textfield.dart';
@@ -92,7 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
 //PASSWORD
             SizedBox(height: 20,),
              TextFormField(
-              controller: passwordController,              
+              controller: passwordController,
+              
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "Password",
@@ -112,19 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) return "Please enter password";
-                
+                if( value.length < 8) return "Enter correct password";
                 return null;
-              isPassword: true,
-              prefixIcon: const Icon(Icons.lock),
-            ),
-            const SizedBox(height: 30),
-            MyButton(
-              text: "Login",
-              onPressed: () {
-                String email = emailController.text.trim();
-                String password = passwordController.text.trim();
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
-
               },
             ),
 
@@ -140,9 +131,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   if(_formKey.currentState!.validate()){
                     setState((){
 
-                    
                     String email = emailController.text.trim();
                     String password = passwordController.text.trim();
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
                     });
                     
 
