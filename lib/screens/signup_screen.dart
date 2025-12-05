@@ -1,10 +1,130 @@
+import 'package:adoptnest/screens/login_screen.dart';
+import 'package:adoptnest/widgets/my_button.dart';
+import 'package:adoptnest/widgets/my_textfield.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+  SignupScreen({super.key});
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+
+            const SizedBox(height: 50),
+            //for title and logo
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo1.png', height: 50,),
+              const Text(
+              "AdoptNest",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+              ],
+            ),
+            
+            const SizedBox(height: 40),
+            const Text(
+              "Create Your Account",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              "Join our family and find your new best friend",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, color: Colors.grey.shade600),
+    
+            ),
+            const SizedBox(height: 30),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Name",
+              controller: nameController,
+              prefixIcon: const Icon(Icons.person),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
+            ),
+            const SizedBox(height: 20),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Email",
+              controller: emailController,
+              prefixIcon: const Icon(Icons.email),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
+            ),
+            const SizedBox(height: 20),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Password",
+              controller: passwordController,
+              prefixIcon: const Icon(Icons.lock),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
+              
+            ),
+            const SizedBox(height: 20),
+            MyTextfield(
+              onChanged: (value) {},
+              hintText: "Number",
+              controller: phoneController,
+              isPassword: true,
+              prefixIcon: const Icon(Icons.phone),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
+            ),
+            const SizedBox(height: 30),
+            MyButton(
+              text: "Register",
+              onPressed: () {
+                String name = nameController.text.trim();
+                String email = emailController.text.trim();
+                String password = passwordController.text.trim();
+                String phone = phoneController.text.trim(); // login logic here
+
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+              },
+              btnColor: Color(0xFF13ECC8),
+              
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Already have an account?"),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginScreen()),
+                    );
+                  },
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Color(0xFF13ECC8)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
