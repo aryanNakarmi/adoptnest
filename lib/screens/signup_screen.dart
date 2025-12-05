@@ -64,6 +64,7 @@ class SignupScreen extends StatelessWidget {
               hintText: "Email",
               controller: emailController,
               prefixIcon: const Icon(Icons.email),
+              borderColor: Color(0xFF13ECC8)
             ),
             const SizedBox(height: 20),
             MyTextfield(
@@ -71,6 +72,7 @@ class SignupScreen extends StatelessWidget {
               hintText: "Password",
               controller: passwordController,
               prefixIcon: const Icon(Icons.email),
+              
             ),
             const SizedBox(height: 20),
             MyTextfield(
@@ -79,6 +81,8 @@ class SignupScreen extends StatelessWidget {
               controller: phoneController,
               isPassword: true,
               prefixIcon: const Icon(Icons.lock),
+              borderColor: Color(0xFF13ECC8),
+              enabledBorderColor :const Color(0xFFB2FFF2),
             ),
             const SizedBox(height: 30),
             MyButton(

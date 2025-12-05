@@ -22,7 +22,7 @@ class MyButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor:  const Color(0xFFFF8C69), 
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))
         ),
         onPressed: onPressed,
         child: Text(text,style:TextStyle(
