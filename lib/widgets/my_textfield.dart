@@ -16,8 +16,13 @@ class MyTextfield extends StatelessWidget {
   required this.hintText, 
   required this.controller,
   this.isPassword = false,
+
+  this.prefixIcon
+  
+
   this.prefixIcon,
   this.borderColor = const Color(0xFFFF8C69),  this.enabledBorderColor= const Color(0xFFFFCBB5),
+
 
   });
 
