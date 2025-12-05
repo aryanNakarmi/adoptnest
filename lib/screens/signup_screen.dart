@@ -1,3 +1,4 @@
+import 'package:adoptnest/screens/login_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
 import 'package:adoptnest/widgets/my_textfield.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ class SignupScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController numberController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
 
   @override
@@ -81,8 +82,10 @@ class SignupScreen extends StatelessWidget {
             MyButton(
               text: "Login",
               onPressed: () {
+                String name = nameController.text.trim();
                 String email = emailController.text.trim();
                 String password = passwordController.text.trim();
+                String phone = phoneController.text.trim();
                 // login logic here
               },
             ),
@@ -90,17 +93,17 @@ class SignupScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Don't have an account?"),
+                const Text("Already have an account?"),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SignupScreen()),
+                          builder: (context) => LoginScreen()),
                     );
                   },
                   child: const Text(
-                    "Sign Up",
+                    "Login",
                     style: TextStyle(color: Color(0xFFFF8C69)),
                   ),
                 ),
