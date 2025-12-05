@@ -14,8 +14,8 @@ class MyTextfield extends StatelessWidget {
   required this.hintText, 
   required this.controller,
   this.isPassword = false,
-  this.prefixIcon
-  
+  this.prefixIcon,
+
   });
 
   @override

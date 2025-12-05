@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) return "Please enter password";
-                
+                if( value.length < 8) return "Enter correct password";
                 return null;
               },
             ),
@@ -130,6 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   if(_formKey.currentState!.validate()){
                     setState((){
+<<<<<<< HEAD
                     
                       Navigator.push(
                         context,
@@ -139,7 +140,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     
                     
                     String email =  emailController.text.trim();
+=======
+
+                    String email = emailController.text.trim();
+>>>>>>> signup
                     String password = passwordController.text.trim();
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
                     });
                     
 
