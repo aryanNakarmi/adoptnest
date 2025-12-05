@@ -1,3 +1,4 @@
+import 'package:adoptnest/screens/home_screen.dart';
 import 'package:adoptnest/screens/signup_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
 import 'package:adoptnest/widgets/my_textfield.dart';
@@ -129,9 +130,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   if(_formKey.currentState!.validate()){
                     setState((){
-
                     
-                    String email = emailController.text.trim();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomeScreen()),
+                      );
+                    
+                    
+                    String email =  emailController.text.trim();
                     String password = passwordController.text.trim();
                     });
                     
