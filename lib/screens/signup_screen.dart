@@ -80,7 +80,7 @@ class SignupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             MyButton(
-              text: "Login",
+              text: "Register",
               onPressed: () {
                 String name = nameController.text.trim();
                 String email = emailController.text.trim();
