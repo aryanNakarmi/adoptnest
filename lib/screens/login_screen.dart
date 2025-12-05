@@ -130,20 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   if(_formKey.currentState!.validate()){
                     setState((){
-<<<<<<< HEAD
-                    
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => HomeScreen()),
-                      );
-                    
-                    
-                    String email =  emailController.text.trim();
-=======
 
+                    
                     String email = emailController.text.trim();
->>>>>>> signup
                     String password = passwordController.text.trim();
                     Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
                     });
