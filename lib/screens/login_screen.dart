@@ -90,14 +90,33 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
 
 //PASSWORD
-              const SizedBox(height: 20),
-              MyTextfield(
-                onChanged: (value) {},
+            SizedBox(height: 20,),
+             TextFormField(
+              controller: passwordController,
+              
+              decoration: InputDecoration(
                 hintText: "Password",
-                controller: passwordController,
-                isPassword: true,
                 prefixIcon: const Icon(Icons.lock),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(color: Color(0xFFFF8C69), width: 2),
+                ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) return "Please enter password";
+                
+                return null;
+              },
+            ),
+
 
 
 
