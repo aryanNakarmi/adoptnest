@@ -73,7 +73,7 @@ class SignupScreen extends StatelessWidget {
               onChanged: (value) {},
               hintText: "Password",
               controller: passwordController,
-              prefixIcon: const Icon(Icons.lock_clock),
+              prefixIcon: const Icon(Icons.lock),
               borderColor: Color(0xFF13ECC8),
               enabledBorderColor :const Color(0xFFB2FFF2),
               
@@ -84,7 +84,7 @@ class SignupScreen extends StatelessWidget {
               hintText: "Number",
               controller: phoneController,
               isPassword: true,
-              prefixIcon: const Icon(Icons.call),
+              prefixIcon: const Icon(Icons.phone),
               borderColor: Color(0xFF13ECC8),
               enabledBorderColor :const Color(0xFFB2FFF2),
             ),
