@@ -1,3 +1,4 @@
+import 'package:adoptnest/screens/home_screen.dart';
 import 'package:adoptnest/screens/signup_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
 import 'package:adoptnest/widgets/my_textfield.dart';
@@ -67,7 +68,7 @@ class LoginScreen extends StatelessWidget {
               onPressed: () {
                 String email = emailController.text.trim();
                 String password = passwordController.text.trim();
-                // login logic here
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
               },
             ),
             const SizedBox(height: 20),
