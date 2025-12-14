@@ -1,7 +1,6 @@
 import 'package:adoptnest/screens/home_screen.dart';
 import 'package:adoptnest/screens/signup_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
-import 'package:adoptnest/widgets/my_textfield.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
