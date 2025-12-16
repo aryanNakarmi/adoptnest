@@ -78,16 +78,16 @@ flutter:
   # example:
   # fonts:
   fonts:
-    - family: DMSans Bold
+    - family: OpenSans Bold
       fonts:
-        - asset: assets/fonts/DMSans-Bold.ttf
+        - asset: assets/fonts/OpenSans-Bold.ttf
         
-    - family: DMSans Regular
+    - family: OpenSans Regular
       fonts:
-        - asset: assets/fonts/DMSans-Regular.ttf
+        - asset: assets/fonts/OpenSans-Regular.ttf
           
-    - family: DMSans Italic
+    - family: OpenSans Italic
       fonts:
-         - asset: assets/fonts/DMSans-Italic.ttf
+         - asset: assets/fonts/OpenSans-Italic.ttfs
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
