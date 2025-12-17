@@ -29,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        elevation: 10,
         backgroundColor: Color(0xFFFF8C69),
         child: const Icon(Icons.add_rounded, color: Colors.white,),
         onPressed: (){
@@ -69,8 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                    color: _selectedIndex == 1? Color(0xFFFF8C69): Colors.grey)
                    ),
                    const SizedBox(width: 48),
-                  
-                  //Chat
+                    //chat
                     IconButton(onPressed: (){
                   setState(() {
                     _selectedIndex =3;
@@ -79,14 +77,12 @@ class _HomeScreenState extends State<HomeScreen> {
                    icon: Icon(Icons.chat_rounded,
                    color: _selectedIndex ==3? Color(0xFFFF8C69): Colors.grey)
                    ),
-                   
                    //profile
                     IconButton(onPressed: (){
                   setState(() {
                     _selectedIndex =4;
                   });
                   },
-                
                    icon: Icon(Icons.person_rounded,
                    color: _selectedIndex == 4? Color(0xFFFF8C69): Colors.grey)
                    ),
