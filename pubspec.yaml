@@ -88,6 +88,6 @@ flutter:
           
     - family: OpenSans Italic
       fonts:
-         - asset: assets/fonts/OpenSans-Italic.ttfs
+         - asset: assets/fonts/OpenSans-Italic.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

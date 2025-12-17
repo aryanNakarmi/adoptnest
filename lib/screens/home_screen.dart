@@ -16,34 +16,84 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   List<Widget> lstBottomScreen = [
-    const DashboardScreen(), 
+    const DashboardScreen(),
     const RescueScreen(),
     const UploadScreen(),
     const ChatScreen(),
     const ProfileScreen(),
-    ];
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: lstBottomScreen[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Home',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.call),label: 'Rescue'),
-        BottomNavigationBarItem(icon: Icon(Icons.add),label: 'Add'),
-        BottomNavigationBarItem(icon: Icon(Icons.chat),label: 'Chat'),
-        BottomNavigationBarItem(icon: Icon(Icons.person),label: 'Profile'),
-      ],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        elevation: 10,
+        backgroundColor: Color(0xFFFF8C69),
+        child: const Icon(Icons.add_rounded, color: Colors.white,),
+        onPressed: (){
+          setState(() {
+            _selectedIndex =2; //upload screen
+          });
+        },
+        shape: const CircleBorder(),
 
-      currentIndex: _selectedIndex,
-      onTap: (index){
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      ),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 10,
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                //Home
+                IconButton(
+                  onPressed: (){
+                    setState(() {
+                      _selectedIndex = 0;
+                    });
+                  }, icon: Icon(
+                    Icons.home_rounded,
+                    color: _selectedIndex == 0? Color(0xFFFF8C69): Colors.grey
+                  )
+                  ),
+                  //Rescue
+                  IconButton(onPressed: (){
+                  setState(() {
+                    _selectedIndex =1;
+                  });
+                  },
+                   icon: Icon(Icons.healing_sharp,
+                   color: _selectedIndex == 1? Color(0xFFFF8C69): Colors.grey)
+                   ),
+                   const SizedBox(width: 48),
+                  
+                  //Chat
+                    IconButton(onPressed: (){
+                  setState(() {
+                    _selectedIndex =3;
+                  });
+                  },
+                   icon: Icon(Icons.chat_rounded,
+                   color: _selectedIndex ==3? Color(0xFFFF8C69): Colors.grey)
+                   ),
+                   
+                   //profile
+                    IconButton(onPressed: (){
+                  setState(() {
+                    _selectedIndex =4;
+                  });
+                  },
+                
+                   icon: Icon(Icons.person_rounded,
+                   color: _selectedIndex == 4? Color(0xFFFF8C69): Colors.grey)
+                   ),
+              ],
+            ) ,
+          ),
+        ),
     );
   }
 }
