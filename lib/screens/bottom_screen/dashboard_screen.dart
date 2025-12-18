@@ -103,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                   RescueScreen();
+                   Navigator.push(context, MaterialPageRoute(builder: (context)=>RescueScreen()));
                   },
                   icon: const Icon(Icons.volunteer_activism, color: Colors.red),
                   label: const Text(
@@ -122,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Adopt button action
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>RescueScreen(mode: "adopt")));
                   },
                   icon: const Icon(Icons.pets, color: Colors.pink),
                   label: const Text(
