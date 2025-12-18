@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onRescueTap;
   final VoidCallback? onAdoptTap;
+
   const DashboardScreen({super.key, required this.onRescueTap, required this.onAdoptTap});
 
   @override
@@ -170,9 +171,110 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
         ),
-        
-
+        //featured Animals section
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical:16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Animals Needing Help",
+              style: TextStyle(
+                
+                fontSize: 20,
+                fontWeight: FontWeight.bold
+              ),
+              ),
+              SizedBox(height: 20,),
+              SizedBox(
+                height: 220,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildAnimalCard(
+                      name: "Bella",
+                      type: "Dog • Injured",
+                      imageUrl:"https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80"
+                    ),
+                     _buildAnimalCard(
+                  name: "Luna",
+                  type: "Cat • Needs home",
+                  imageUrl:
+                      "https://images.unsplash.com/photo-1583337130417-92f4f0ffb30c",
+                ),
+                _buildAnimalCard(
+                  name: "Charlie",
+                  type: "Dog • Abandoned",
+                  imageUrl:
+                      "https://images.unsplash.com/photo-1601758123927-46d29a5d8db5",
+                   ),
+                  ],
+                ),
+              )
+            ],
+          ),
+          )
+      
          
+        ],
+      ),
+    );
+  }
+  Widget _buildAnimalCard({
+    required String name,
+    required String type,
+    required String imageUrl,
+  }){
+    return Container(
+
+      width: 160,
+      margin: const EdgeInsets.only(right:12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          )
+        ]
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+           ),
+           child: Image.network(
+            imageUrl,
+            height: 120,
+            width: double.infinity,
+            fit: BoxFit.cover,
+           ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  type,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  )
+                )
+              ],
+            ),)
         ],
       ),
     );
