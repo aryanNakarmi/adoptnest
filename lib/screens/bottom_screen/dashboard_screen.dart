@@ -96,8 +96,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () {
-                            print("Learn More clicked");
-                          },
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("Help a Stray"),
+                              content: const Text("Every small act of kindness can save a life! Volunteer, adopt, or donate to local shelters."),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text("Close"),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
