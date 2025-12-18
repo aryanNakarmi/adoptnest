@@ -29,67 +29,73 @@ class _HomeScreenState extends State<HomeScreen> {
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFFFF8C69),
-        child: const Icon(Icons.add_rounded, color: Colors.white,),
-        onPressed: (){
+        backgroundColor: const Color(0xFFED3163), // your logo color
+        child: const Icon(Icons.add_rounded, color: Colors.white),
+        onPressed: () {
           setState(() {
-            _selectedIndex =2; //upload screen
+            _selectedIndex = 2; // upload screen
           });
         },
         shape: const CircleBorder(),
-
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20), // floating effect
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            // Home
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 0;
+                });
+              },
+              icon: Icon(
+                Icons.home_rounded,
+                color: _selectedIndex == 0 ? const Color(0xFFED3163) : Colors.grey,
+              ),
+            ),
+            // Rescue
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
+              },
+              icon: Icon(
+                Icons.healing_sharp,
+                color: _selectedIndex == 1 ? const Color(0xFFED3163) : Colors.grey,
+              ),
+            ),
+            const SizedBox(width: 60), // space for FAB
+            // Chat
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 3;
+                });
+              },
+              icon: Icon(
+                Icons.chat_rounded,
+                color: _selectedIndex == 3 ? const Color(0xFFED3163) : Colors.grey,
+              ),
+            ),
+            // Profile
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedIndex = 4;
+                });
+              },
+              icon: Icon(
+                Icons.person_rounded,
+                color: _selectedIndex == 4 ? const Color(0xFFED3163) : Colors.grey,
+              ),
+            ),
+          ],
         ),
-        bottomNavigationBar: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
-          notchMargin: 10,
-          child: SizedBox(
-            height: 60,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                //Home
-                IconButton(
-                  onPressed: (){
-                    setState(() {
-                      _selectedIndex = 0;
-                    });
-                  }, icon: Icon(
-                    Icons.home_rounded,
-                    color: _selectedIndex == 0? Color(0xFFFF8C69): Colors.grey
-                  )
-                  ),
-                  //Rescue
-                  IconButton(onPressed: (){
-                  setState(() {
-                    _selectedIndex =1;
-                  });
-                  },
-                   icon: Icon(Icons.healing_sharp,
-                   color: _selectedIndex == 1? Color(0xFFFF8C69): Colors.grey)
-                   ),
-                   const SizedBox(width: 48),
-                    //chat
-                    IconButton(onPressed: (){
-                  setState(() {
-                    _selectedIndex =3;
-                  });
-                  },
-                   icon: Icon(Icons.chat_rounded,
-                   color: _selectedIndex ==3? Color(0xFFFF8C69): Colors.grey)
-                   ),
-                   //profile
-                    IconButton(onPressed: (){
-                  setState(() {
-                    _selectedIndex =4;
-                  });
-                  },
-                   icon: Icon(Icons.person_rounded,
-                   color: _selectedIndex == 4? Color(0xFFFF8C69): Colors.grey)
-                   ),
-              ],
-            ) ,
-          ),
-        ),
+      ),
     );
   }
 }
+

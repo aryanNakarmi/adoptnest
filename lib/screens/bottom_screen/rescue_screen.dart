@@ -10,6 +10,11 @@ class RescueScreen extends StatefulWidget {
 class _RescueScreenState extends State<RescueScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return SizedBox.expand(child:Center(
+      child: 
+      Text("Rescue"),
+
+    )
+    );
   }
 }
