@@ -1,3 +1,4 @@
+import 'package:adoptnest/screens/bottom_screen/rescue_screen.dart';
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.symmetric(vertical:50, horizontal: 20),
+            padding: const EdgeInsets.only(top:50, left:20, right:20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -46,13 +47,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           // Hero Card
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            height: 300, 
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: const DecorationImage(
                 image: NetworkImage(
-                  "https://images.unsplash.com/photo-1558788353-f76d92427f16?fit=crop&w=600&q=80",
+                  "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=1xw:0.74975xh;center,top&resize=1200:*"
                 ),
                 fit: BoxFit.cover,
               ),
@@ -80,7 +82,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     print("Learn More clicked");
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFED3163),
+                    backgroundColor: Colors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -92,79 +94,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
 
           // Action Buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      print("Rescue clicked");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFED3163),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Rescue"),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      print("Adopt clicked");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFED3163),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Adopt"),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          
 
-          // Nearby Friends
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RescueScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.volunteer_activism, color: Colors.red),
+                  label: const Text(
+                    "Rescue",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFF2EE), // new background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    // Adopt button action
+                  },
+                  icon: const Icon(Icons.pets, color: Colors.pink),
+                  label: const Text(
+                    "Adopt",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFF2EE), // new background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+
          
         ],
       ),
     );
   }
 
-  // Helper Widget for Nearby Friends card
-  Widget _nearbyFriendCard(String name, String breed, String distance, String imageUrl) {
-    return Container(
-      width: 200,
-      margin: const EdgeInsets.all(8),
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 3))],
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(breed, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-              Text(distance, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }

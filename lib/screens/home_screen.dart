@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFED3163), 
+        backgroundColor: Colors.red, 
         child: const Icon(Icons.add_rounded, color: Colors.white),
         onPressed: () {
           setState(() {
@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(
                 Icons.home_rounded,
-                color: _selectedIndex == 0 ? const Color(0xFFED3163) : Colors.grey,
+                color: _selectedIndex == 0 ? Colors.red : Colors.grey,
               ),
             ),
             // Rescue
@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(
                 Icons.healing_sharp,
-                color: _selectedIndex == 1 ? const Color(0xFFED3163) : Colors.grey,
+                color: _selectedIndex == 1 ? Colors.red : Colors.grey,
               ),
             ),
             const SizedBox(width: 60), // space for FAB
@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(
                 Icons.chat_rounded,
-                color: _selectedIndex == 3 ? const Color(0xFFED3163) : Colors.grey,
+                color: _selectedIndex == 3 ? Colors.red : Colors.grey,
               ),
             ),
             // Profile
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               icon: Icon(
                 Icons.person_rounded,
-                color: _selectedIndex == 4 ? const Color(0xFFED3163) : Colors.grey,
+                color: _selectedIndex == 4 ? Colors.red : Colors.grey,
               ),
             ),
           ],
