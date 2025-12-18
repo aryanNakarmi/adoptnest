@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFED3163), // your logo color
+        backgroundColor: const Color(0xFFED3163), 
         child: const Icon(Icons.add_rounded, color: Colors.white),
         onPressed: () {
           setState(() {
@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: const CircleBorder(),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20), // floating effect
+        padding: const EdgeInsets.all(20), 
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
