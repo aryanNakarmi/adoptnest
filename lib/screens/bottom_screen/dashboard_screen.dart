@@ -192,20 +192,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     _buildAnimalCard(
                       name: "Bella",
-                      type: "Dog • Injured",
+                      type: "Dog",issue:"Injured",
                       imageUrl:"https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80"
                     ),
                      _buildAnimalCard(
                   name: "Luna",
-                  type: "Cat • Needs home",
+                  type: "Cat",
+                  issue: "Needs home",
                   imageUrl:
-                      "https://images.unsplash.com/photo-1583337130417-92f4f0ffb30c",
+                      "https://www.scottishspca.org/wp-content/uploads/2024/09/CATS-INVERNESS-JUNE-24-13-1369x913.jpg",
                 ),
                 _buildAnimalCard(
                   name: "Charlie",
-                  type: "Dog • Abandoned",
+                  type: "Dog",
+                  issue: "Abandoned",
                   imageUrl:
-                      "https://images.unsplash.com/photo-1601758123927-46d29a5d8db5",
+                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKHZKP5evJdJ_ptEGnEIhJ4WgHCNesk0S9IQ&s",
+                   ),
+                _buildAnimalCard(
+                  name: "Toofan",
+                  type: "Horse",
+                  issue: "Abused",
+                  imageUrl:
+                      "https://cdn.shopify.com/s/files/1/0765/3946/1913/files/depressed_horse.png?v=1733171444",
                    ),
                   ],
                 ),
@@ -222,12 +231,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildAnimalCard({
     required String name,
     required String type,
+    required String issue,
     required String imageUrl,
+
   }){
     return Container(
 
       width: 160,
-      margin: const EdgeInsets.only(right:12),
+      margin: const EdgeInsets.only(right:9),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -266,13 +277,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
+                
                 Text(
                   type,
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
                   )
-                )
+                ),
+                Text(
+                  issue,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  )
+                ),
               ],
             ),)
         ],
