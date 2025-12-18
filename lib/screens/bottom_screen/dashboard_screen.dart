@@ -1,5 +1,7 @@
 import 'package:adoptnest/screens/bottom_screen/rescue_screen.dart';
+import 'package:adoptnest/themes/font_data.dart';
 import 'package:flutter/material.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   final VoidCallback? onRescueTap;
@@ -12,8 +14,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -28,16 +28,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text("Welcome back", style: TextStyle(color: Colors.grey)),
-                    SizedBox(height: 4),
-                    Text(
-                      "Hello",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                       ),
-                    ),
+                  children: [
+                    Text("Welcome back", style: FontData.body2),
+                    const SizedBox(height: 4),
+                    Text("Hello", style: FontData.header1),
                   ],
                 ),
                 IconButton(
@@ -48,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
 
-                    // Hero Card
+          // Hero Card
           Container(
             height: 270,
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -72,45 +66,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(16),
               child: Stack(
                 children: [
-                  Container(
-                    color: Colors.black.withOpacity(0.25), 
-                  ),
+                  Container(color: Colors.black.withOpacity(0.25)),
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Help a stray today",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                          style: FontData.header2.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
+                        Text(
                           "Every small act of kindness makes a huge difference in a life.",
-                          style: TextStyle(color: Colors.white70),
+                          style: FontData.body2.copyWith(color: Colors.white70),
                         ),
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text("Help a Stray"),
-                              content: const Text("Every small act of kindness can save a life! Volunteer, adopt, or donate to local shelters."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Help a Stray"),
+                                content: const Text("Every small act of kindness can save a life! Volunteer, adopt, or donate to local shelters."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("Close"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
@@ -127,116 +115,98 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
-                    
-        // Action Buttons
-                    
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: widget.onRescueTap,
-                  icon: const Icon(Icons.volunteer_activism, color: Colors.red),
-                  label: const Text(
-                    "Rescue",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber.shade50,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+          // Action Buttons
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: widget.onRescueTap,
+                    icon: const Icon(Icons.volunteer_activism, color: Colors.red),
+                    label: Text("Rescue", style: FontData.body1.copyWith(color: Colors.black)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: widget.onAdoptTap,
-                  icon: const Icon(Icons.pets, color: Colors.pink),
-                  label: const Text(
-                    "Adopt",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber.shade50,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: widget.onAdoptTap,
+                    icon: const Icon(Icons.pets, color: Colors.pink),
+                    label: Text("Adopt", style: FontData.body1.copyWith(color: Colors.black)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber.shade50,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        //featured Animals section
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical:16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Animals Needing Help",
-              style: TextStyle(
-                
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-              ),
-              ),
-              SizedBox(height: 20,),
-              SizedBox(
-                height: 220,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _buildAnimalCard(
-                      name: "Bella",
-                      type: "Dog",issue:"Injured",
-                      imageUrl:"https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80"
-                    ),
-                     _buildAnimalCard(
-                  name: "Luna",
-                  type: "Cat",
-                  issue: "Needs home",
-                  imageUrl:
-                      "https://www.scottishspca.org/wp-content/uploads/2024/09/CATS-INVERNESS-JUNE-24-13-1369x913.jpg",
-                ),
-                _buildAnimalCard(
-                  name: "Charlie",
-                  type: "Dog",
-                  issue: "Abandoned",
-                  imageUrl:
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKHZKP5evJdJ_ptEGnEIhJ4WgHCNesk0S9IQ&s",
-                   ),
-                _buildAnimalCard(
-                  name: "Toofan",
-                  type: "Horse",
-                  issue: "Abused",
-                  imageUrl:
-                      "https://cdn.shopify.com/s/files/1/0765/3946/1913/files/depressed_horse.png?v=1733171444",
-                   ),
-                  ],
-                ),
-              )
-            ],
-          ),
+
+          // Featured Animals Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical:16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Animals Needing Help", style: FontData.header2),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 220,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      _buildAnimalCard(
+                        name: "Bella",
+                        type: "Dog",
+                        issue:"Injured",
+                        imageUrl:"https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80"
+                      ),
+                      _buildAnimalCard(
+                        name: "Luna",
+                        type: "Cat",
+                        issue: "Needs home",
+                        imageUrl:"https://www.scottishspca.org/wp-content/uploads/2024/09/CATS-INVERNESS-JUNE-24-13-1369x913.jpg",
+                      ),
+                      _buildAnimalCard(
+                        name: "Charlie",
+                        type: "Dog",
+                        issue: "Abandoned",
+                        imageUrl:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKHZKP5evJdJ_ptEGnEIhJ4WgHCNesk0S9IQ&s",
+                      ),
+                      _buildAnimalCard(
+                        name: "Toofan",
+                        type: "Horse",
+                        issue: "Abused",
+                        imageUrl:"https://cdn.shopify.com/s/files/1/0765/3946/1913/files/depressed_horse.png?v=1733171444",
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           )
-      
-         
         ],
       ),
     );
   }
+
   Widget _buildAnimalCard({
     required String name,
     required String type,
     required String issue,
     required String imageUrl,
-
-  }){
+  }) {
     return Container(
-
       width: 160,
       margin: const EdgeInsets.only(right:9),
       decoration: BoxDecoration(
@@ -246,57 +216,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 6,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           )
         ]
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-           ),
-           child: Image.network(
-            imageUrl,
-            height: 120,
-            width: double.infinity,
-            fit: BoxFit.cover,
-           ),
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: Image.network(
+              imageUrl,
+              height: 120,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(name, style: FontData.header3),
                 const SizedBox(height: 4),
-                
-                Text(
-                  type,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  )
-                ),
-                Text(
-                  issue,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  )
-                ),
+                Text(type, style: FontData.body2),
+                Text(issue, style: FontData.body2),
               ],
-            ),)
+            ),
+          )
         ],
       ),
     );
   }
-
 }

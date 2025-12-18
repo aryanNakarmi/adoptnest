@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class FontData {
+class FontData{
   // Headers
   static const TextStyle header1 = TextStyle(
     fontFamily: 'OpenSans Bold',
@@ -12,6 +12,12 @@ class FontData {
   static const TextStyle header2 = TextStyle(
     fontFamily: 'OpenSans Bold',
     fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+  static const TextStyle header3 = TextStyle(
+    fontFamily: 'OpenSans Bold',
+    fontSize: 16,
     fontWeight: FontWeight.bold,
     color: Colors.black,
   );
