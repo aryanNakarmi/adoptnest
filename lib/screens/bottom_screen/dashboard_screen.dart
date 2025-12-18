@@ -47,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           // Hero Card
           Container(
-            height: 300, 
+            height: 270, 
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -103,10 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RescueScreen()),
-                    );
+                   RescueScreen();
                   },
                   icon: const Icon(Icons.volunteer_activism, color: Colors.red),
                   label: const Text(
@@ -114,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: TextStyle(color: Colors.black),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFF2EE), // new background color
+                    backgroundColor: Colors.amber.shade50,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -133,7 +130,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: TextStyle(color: Colors.black),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFF2EE), // new background color
+                    backgroundColor: Colors.amber.shade50,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
