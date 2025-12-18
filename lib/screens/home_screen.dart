@@ -14,17 +14,32 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  String rescueMode = "rescue";
 
-  List<Widget> lstBottomScreen = [
-    const DashboardScreen(),
-    const RescueScreen(),
-    const UploadScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
-  ];
 
   @override
   Widget build(BuildContext context) {
+      final List<Widget> lstBottomScreen = [
+        DashboardScreen(
+          onRescueTap: () {
+            setState(() {
+              rescueMode = "rescue";
+              _selectedIndex = 1;
+            });
+          },
+          onAdoptTap: () {
+            setState(() {
+              rescueMode = "adopt";
+              _selectedIndex = 1;
+            });
+          },
+        ),
+        RescueScreen(mode: rescueMode),
+        const UploadScreen(),
+        const ChatScreen(),
+        const ProfileScreen(),
+      ];
+
     return Scaffold(
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

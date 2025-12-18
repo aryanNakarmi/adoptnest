@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 class RescueScreen extends StatefulWidget {
 
   final String mode;
-  const RescueScreen({super.key, 
-  this.mode = "rescue"
-  });
+  const RescueScreen({super.key, this.mode ="rescue"});
 
   @override
   State<RescueScreen> createState() => _RescueScreenState();

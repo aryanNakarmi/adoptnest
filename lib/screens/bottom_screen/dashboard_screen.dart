@@ -2,7 +2,9 @@ import 'package:adoptnest/screens/bottom_screen/rescue_screen.dart';
 import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onRescueTap;
+  final VoidCallback? onAdoptTap;
+  const DashboardScreen({super.key, required this.onRescueTap, required this.onAdoptTap});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -102,9 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                   Navigator.push(context, MaterialPageRoute(builder: (context)=>RescueScreen()));
-                  },
+                  onPressed: widget.onRescueTap,
                   icon: const Icon(Icons.volunteer_activism, color: Colors.red),
                   label: const Text(
                     "Rescue",
@@ -121,9 +121,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(width: 15),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>RescueScreen(mode: "adopt")));
-                  },
+                  onPressed: widget.onAdoptTap,
                   icon: const Icon(Icons.pets, color: Colors.pink),
                   label: const Text(
                     "Adopt",
