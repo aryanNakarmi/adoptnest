@@ -11,16 +11,12 @@ class RegisterUsecaseParams extends Equatable{
   final String fullName;
   final String email;
   final String? phoneNumber;
-  final String? batchId;
-  final String username;
   final String password;
   
   const RegisterUsecaseParams({
     required this.fullName, 
     required this.email, 
     this.phoneNumber, 
-    this.batchId, 
-    required this.username, 
     required this.password
     });
 
@@ -29,8 +25,6 @@ class RegisterUsecaseParams extends Equatable{
     fullName,
     email,
     phoneNumber,
-    batchId,
-    username,
     password
   ];
 }
