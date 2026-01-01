@@ -1,5 +1,5 @@
-import 'package:adoptnest/screens/bottom_screen/rescue_screen.dart';
-import 'package:adoptnest/themes/font_data.dart';
+import 'package:adoptnest/features/screens/bottom_screen/rescue_screen.dart';
+import 'package:adoptnest/app/themes/font_data.dart';
 import 'package:flutter/material.dart';
 
 

@@ -1,4 +1,4 @@
-import 'package:adoptnest/screens/login_screen.dart';
+import 'package:adoptnest/features/screens/login_screen.dart';
 import 'package:adoptnest/widgets/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

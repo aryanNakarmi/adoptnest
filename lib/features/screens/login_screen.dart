@@ -1,5 +1,5 @@
-import 'package:adoptnest/screens/home_screen.dart';
-import 'package:adoptnest/screens/signup_screen.dart';
+import 'package:adoptnest/features/screens/home_screen.dart';
+import 'package:adoptnest/features/screens/signup_screen.dart';
 import 'package:adoptnest/widgets/my_button.dart';
 import 'package:flutter/material.dart';
 
