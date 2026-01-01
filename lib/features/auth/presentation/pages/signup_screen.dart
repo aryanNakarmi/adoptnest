@@ -1,3 +1,4 @@
+import 'package:adoptnest/app/routes/app_routes.dart';
 import 'package:adoptnest/core/utils/snackbar_utils.dart';
 import 'package:adoptnest/features/auth/presentation/pages/login_screen.dart';
 import 'package:adoptnest/features/auth/presentation/state/auth_state.dart';
@@ -73,7 +74,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
          context,
          next.errorMessage ?? "Registration Successful"
          );
+           // Navigate to LoginScreen using AppRoutes after a short delay
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      AppRoutes.pushReplacement(context, LoginScreen());
+    });
+         
       }
+      
       });
 
 
