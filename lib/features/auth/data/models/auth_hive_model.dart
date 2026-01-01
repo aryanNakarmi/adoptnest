@@ -21,21 +21,18 @@ class AuthHiveModel extends HiveObject{
   @HiveField(3)
   final String? phoneNumber;
 
-  @HiveField(4)
-  final String username;
 
-  @HiveField(5)
+  @HiveField(4)
   final String? password;
 
-  @HiveField(6)
+  @HiveField(5)
   final String? profilePicture;
 
   AuthHiveModel({
     String? authId, 
     required this.fullName, 
     required this.email, 
-    this.phoneNumber, 
-    required this.username, 
+    this.phoneNumber,  
     this.password, 
     this.profilePicture
     }): authId = authId?? Uuid().v4();
@@ -47,7 +44,6 @@ factory AuthHiveModel.fromEntity(AuthEntity entity){
       fullName: entity.fullName,
       email: entity.email,
       phoneNumber: entity.phoneNumber,
-      username: entity.username,
       password: entity.password,
       profilePicture: entity.profilePicture,
   );
@@ -59,7 +55,6 @@ AuthEntity toEntity({AuthEntity? batchEntity}){
       fullName: fullName,
       email: email,
       phoneNumber: phoneNumber,
-      username: username,
       password: password,
       profilePicture: profilePicture,
      );
