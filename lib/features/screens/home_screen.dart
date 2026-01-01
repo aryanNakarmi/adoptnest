@@ -1,7 +1,7 @@
 import 'package:adoptnest/features/screens/bottom_screen/chat_screen.dart';
 import 'package:adoptnest/features/screens/bottom_screen/dashboard_screen.dart';
 import 'package:adoptnest/features/screens/bottom_screen/profile_screen.dart';
-import 'package:adoptnest/features/screens/bottom_screen/rescue_screen.dart';
+import 'package:adoptnest/features/screens/bottom_screen/adopt_screen.dart';
 import 'package:adoptnest/features/screens/bottom_screen/upload_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,27 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  String rescueMode = "rescue";
+ 
 
 
   @override
   Widget build(BuildContext context) {
       final List<Widget> lstBottomScreen = [
-        DashboardScreen(
-          onRescueTap: () {
-            setState(() {
-              rescueMode = "rescue";
-              _selectedIndex = 1;
-            });
-          },
-          onAdoptTap: () {
-            setState(() {
-              rescueMode = "adopt";
-              _selectedIndex = 1;
-            });
-          },
-        ),
-        RescueScreen(mode: rescueMode),
+        DashboardScreen(onAdoptTap: () {
+          setState(() {
+            _selectedIndex = 1;
+          });
+        }),
+        const AdoptScreen(),
         const UploadScreen(),
         const ChatScreen(),
         const ProfileScreen(),
@@ -66,11 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               icon: Icon(
-                Icons.home_rounded,
+                Icons.pets_rounded,
                 color: _selectedIndex == 0 ? Colors.red : Colors.grey,
               ),
             ),
-            // Rescue
+            // Adopt
             IconButton(
               onPressed: () {
                 setState(() {

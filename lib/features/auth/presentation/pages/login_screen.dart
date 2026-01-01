@@ -1,24 +1,59 @@
+import 'package:adoptnest/app/routes/app_routes.dart';
+import 'package:adoptnest/core/utils/snackbar_utils.dart';
+import 'package:adoptnest/features/auth/presentation/state/auth_state.dart';
+import 'package:adoptnest/features/auth/presentation/view_model/auth_view_model.dart';
+import 'package:adoptnest/features/screens/bottom_screen/dashboard_screen.dart';
 import 'package:adoptnest/features/screens/home_screen.dart';
 import 'package:adoptnest/features/auth/presentation/pages/signup_screen.dart';
 import 'package:adoptnest/features/auth/presentation/widgets/my_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _isLoading = false;
 
-  final TextEditingController passwordController = TextEditingController();
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-  final _formKey= GlobalKey<FormState>();
+   Future<void> _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+     await ref.
+     read(authViewModelProvider.notifier).login(email: _emailController.text.trim(), password: _passwordController.text.trim());
+  }
+  }
+   void _navigateToSignup() {
+    AppRoutes.push(context, SignupScreen());
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    final authState = ref.watch(authViewModelProvider);
+    ref.listen<AuthState>(authViewModelProvider,(previous, next){
+    if(next.status == AuthStatus.authenticated){
+        //dashboard
+      AppRoutes.pushReplacement(context, DashboardScreen());
+    }else if (next.status == AuthStatus.error && next.errorMessage != null){
+        //error message
+        SnackbarUtils.showError(context, next.errorMessage!);
+    }
+  });
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
@@ -63,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 //EMAIL
               TextFormField(
-              controller: emailController,
+              controller: _emailController,
               
               decoration: InputDecoration(
                 hintText: "Email",
@@ -92,12 +127,24 @@ class _LoginScreenState extends State<LoginScreen> {
 //PASSWORD
             SizedBox(height: 20,),
              TextFormField(
-              controller: passwordController,
+              controller: _passwordController,
               
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "Password",
                 prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -123,20 +170,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
 //Button
               const SizedBox(height: 30),
+
               MyButton(
                 text: "Login",
-                onPressed: () {
+                isLoading: authState.status == AuthStatus.loading,
+                onPressed: () async {
 
                   if(_formKey.currentState!.validate()){
-                    setState((){
-
-                    
-                    String email = emailController.text.trim();
-                    String password = passwordController.text.trim();
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> HomeScreen()));
-                    });
-                    
-
+                    await _handleLogin();
 
                   }
 
@@ -149,13 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const Text("Don't have an account?"),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SignupScreen()),
-                      );
-                    },
+                    onPressed: _navigateToSignup,
                     child: const Text(
                       "Sign Up",
                       style: TextStyle(color: Color(0xFFFF8C69)),
