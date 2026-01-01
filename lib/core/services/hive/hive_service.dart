@@ -5,10 +5,10 @@ import 'package:hive/hive.dart';
 
 import 'package:path_provider/path_provider.dart';
 
-
 final hiveServiceProvider = Provider<HiveService>((ref){
   return HiveService();
 });
+
 
 class HiveService {
   //Initial Hive
@@ -19,26 +19,24 @@ class HiveService {
      Hive.init(path);
     _registerAdapters();
     await _openBoxes();
+   
   }
 
 
-
   //Register all type adapters
-  void _registerAdapters(){
-    
+ void _registerAdapters(){
 
-      if(!Hive.isAdapterRegistered(HiveTableConstant.authTypeId)){
+    if(!Hive.isAdapterRegistered(HiveTableConstant.authTypeId)){
       Hive.registerAdapter(AuthHiveModelAdapter());
-    }
     }
   }
 
   //Open all boxes
   Future<void> _openBoxes() async {
+
     await Hive.openBox<AuthHiveModel>(HiveTableConstant.authTable);
 
   }
-
 
 
   //Close all boxes
@@ -81,3 +79,4 @@ Future<AuthHiveModel> registerUser(AuthHiveModel model) async {
     final users = _authBox.values.where((user)=> user.email == email);
     return users.isNotEmpty;
   }
+}
