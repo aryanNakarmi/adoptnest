@@ -1,5 +1,5 @@
-import 'package:adoptnest/features/screens/login_screen.dart';
-import 'package:adoptnest/widgets/my_button.dart';
+import 'package:adoptnest/features/auth/presentation/pages/login_screen.dart';
+import 'package:adoptnest/features/auth/presentation/widgets/my_button.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
