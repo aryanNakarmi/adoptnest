@@ -1,28 +1,21 @@
-import 'package:adoptnest/features/screens/bottom_screen/rescue_screen.dart';
 import 'package:adoptnest/app/themes/font_data.dart';
 import 'package:flutter/material.dart';
 
-
-class DashboardScreen extends StatefulWidget {
-  final VoidCallback? onRescueTap;
+class DashboardScreen extends StatelessWidget {
   final VoidCallback? onAdoptTap;
 
-  const DashboardScreen({super.key, required this.onRescueTap, required this.onAdoptTap});
+  const DashboardScreen({super.key, this.onAdoptTap});
 
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 20), // extra padding for FAB
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.only(top:50, left:20, right:20),
+            padding: const EdgeInsets.only(top: 50, left: 20, right: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(16),
               image: const DecorationImage(
                 image: NetworkImage(
-                  "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg"
+                  "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg",
                 ),
                 fit: BoxFit.cover,
               ),
@@ -89,7 +82,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               context: context,
                               builder: (context) => AlertDialog(
                                 title: const Text("Help a Stray"),
-                                content: const Text("Every small act of kindness can save a life! Volunteer, adopt, or donate to local shelters."),
+                                content: const Text(
+                                    "Every small act of kindness can save a life! Volunteer, adopt, or donate to local shelters."),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
@@ -116,45 +110,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
 
-          // Action Buttons
+          // Adopt Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: widget.onRescueTap,
-                    icon: const Icon(Icons.volunteer_activism, color: Colors.red),
-                    label: Text("Rescue", style: FontData.body1.copyWith(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber.shade50,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: onAdoptTap,
+                icon: const Icon(Icons.pets, color: Colors.pink),
+                label: Text("Adopt", style: FontData.body1.copyWith(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade50,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: widget.onAdoptTap,
-                    icon: const Icon(Icons.pets, color: Colors.pink),
-                    label: Text("Adopt", style: FontData.body1.copyWith(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber.shade50,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
 
           // Featured Animals Section
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical:16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -168,33 +145,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       _buildAnimalCard(
                         name: "Bella",
                         type: "Dog",
-                        issue:"Injured",
-                        imageUrl:"https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80"
+                        issue: "Injured",
+                        imageUrl:
+                            "https://www.borrowmydoggy.com/_next/image?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2F4ij0poqn%2Fproduction%2Fe24bfbd855cda99e303975f2bd2a1bf43079b320-800x600.jpg&w=1080&q=80",
                       ),
                       _buildAnimalCard(
                         name: "Luna",
                         type: "Cat",
                         issue: "Needs home",
-                        imageUrl:"https://www.scottishspca.org/wp-content/uploads/2024/09/CATS-INVERNESS-JUNE-24-13-1369x913.jpg",
+                        imageUrl:
+                            "https://www.scottishspca.org/wp-content/uploads/2024/09/CATS-INVERNESS-JUNE-24-13-1369x913.jpg",
                       ),
                       _buildAnimalCard(
                         name: "Charlie",
                         type: "Dog",
                         issue: "Abandoned",
-                        imageUrl:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKHZKP5evJdJ_ptEGnEIhJ4WgHCNesk0S9IQ&s",
+                        imageUrl:
+                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKHZKP5evJdJ_ptEGnEIhJ4WgHCNesk0S9IQ&s",
                       ),
                       _buildAnimalCard(
                         name: "Toofan",
                         type: "Horse",
                         issue: "Abused",
-                        imageUrl:"https://cdn.shopify.com/s/files/1/0765/3946/1913/files/depressed_horse.png?v=1733171444",
+                        imageUrl:
+                            "https://cdn.shopify.com/s/files/1/0765/3946/1913/files/depressed_horse.png?v=1733171444",
                       ),
                     ],
                   ),
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -208,7 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }) {
     return Container(
       width: 160,
-      margin: const EdgeInsets.only(right:9),
+      margin: const EdgeInsets.only(right: 9),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -218,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             blurRadius: 6,
             offset: const Offset(0, 3),
           )
-        ]
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

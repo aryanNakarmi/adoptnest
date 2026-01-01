@@ -48,7 +48,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen<AuthState>(authViewModelProvider,(previous, next){
     if(next.status == AuthStatus.authenticated){
         //dashboard
-      AppRoutes.pushReplacement(context, DashboardScreen());
+      AppRoutes.pushReplacement(context, const HomeScreen());
+
     }else if (next.status == AuthStatus.error && next.errorMessage != null){
         //error message
         SnackbarUtils.showError(context, next.errorMessage!);
