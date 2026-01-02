@@ -3,7 +3,7 @@ import 'package:adoptnest/core/utils/snackbar_utils.dart';
 import 'package:adoptnest/features/auth/presentation/state/auth_state.dart';
 import 'package:adoptnest/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:adoptnest/features/screens/bottom_screen/dashboard_screen.dart';
-import 'package:adoptnest/features/screens/home_screen.dart';
+import 'package:adoptnest/features/home/presentation/pages/home_screen.dart';
 import 'package:adoptnest/features/auth/presentation/pages/signup_screen.dart';
 import 'package:adoptnest/features/auth/presentation/widgets/my_button.dart';
 import 'package:flutter/material.dart';

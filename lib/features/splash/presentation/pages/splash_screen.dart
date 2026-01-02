@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:adoptnest/features/screens/onboarding_screen.dart';
+import 'package:adoptnest/features/onboarding/presentation/pages/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {

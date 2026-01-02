@@ -1,4 +1,4 @@
-import 'package:adoptnest/features/screens/splash_screen.dart';
+import 'package:adoptnest/features/splash/presentation/pages/splash_screen.dart';
 import 'package:adoptnest/app/themes/theme_data.dart';
 import 'package:flutter/material.dart';
 
