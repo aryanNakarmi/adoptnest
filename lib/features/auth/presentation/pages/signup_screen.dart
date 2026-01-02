@@ -238,7 +238,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
-                      hintText: "Password",
+                      hintText: "Confirm Password",
                   prefixIcon: const Icon(Icons.lock),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
