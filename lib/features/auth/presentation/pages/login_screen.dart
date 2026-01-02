@@ -130,15 +130,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
              TextFormField(
               controller: _passwordController,
               
-              obscureText: true,
+              obscureText: _obscurePassword,
               decoration: InputDecoration(
                 hintText: "Password",
                 prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
                       ),
                       onPressed: () {
                         setState(() {
