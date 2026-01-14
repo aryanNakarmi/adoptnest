@@ -1,8 +1,9 @@
-import 'package:adoptnest/features/screens/bottom_screen/chat_screen.dart';
-import 'package:adoptnest/features/screens/bottom_screen/dashboard_screen.dart';
-import 'package:adoptnest/features/screens/bottom_screen/profile_screen.dart';
-import 'package:adoptnest/features/screens/bottom_screen/adopt_screen.dart';
-import 'package:adoptnest/features/screens/bottom_screen/upload_screen.dart';
+
+import 'package:adoptnest/features/screens/presentation/pages/adopt_screen.dart';
+import 'package:adoptnest/features/screens/presentation/pages/chat_screen.dart';
+import 'package:adoptnest/features/screens/presentation/pages/dashboard_screen.dart';
+import 'package:adoptnest/features/screens/presentation/pages/profile_screen.dart';
+import 'package:adoptnest/features/screens/presentation/pages/upload_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {

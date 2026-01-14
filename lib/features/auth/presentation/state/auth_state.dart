@@ -9,11 +9,14 @@ class AuthState extends Equatable {
   final AuthEntity? authEntity;
   final String? errorMessage;
 
-  const AuthState({
+    const AuthState({
     this.status = AuthStatus.initial, 
     this.authEntity, 
     this.errorMessage
     });
+
+
+
 
   //copywith
 
