@@ -22,6 +22,7 @@ class UserSessionService {
   static const String _keyUserFullName = 'user_full_name';
   static const String _keyUserUsername = 'user_username';
   static const String _keyUserPhoneNumber = 'user_phone_number';
+  static const String _keyUserBatchId = 'user_batch_id';
   static const String _keyUserProfilePicture = 'user_profile_picture';
 
   UserSessionService({required SharedPreferences prefs}) : _prefs = prefs;
@@ -31,21 +32,22 @@ class UserSessionService {
     required String userId,
     required String email,
     required String fullName,
-    String? username,
+    required String username,
     String? phoneNumber,
+    String? batchId,
     String? profilePicture,
   }) async {
     await _prefs.setBool(_keyIsLoggedIn, true);
     await _prefs.setString(_keyUserId, userId);
     await _prefs.setString(_keyUserEmail, email);
     await _prefs.setString(_keyUserFullName, fullName);
-    if (username != null) {
     await _prefs.setString(_keyUserUsername, username);
-    }
     if (phoneNumber != null) {
       await _prefs.setString(_keyUserPhoneNumber, phoneNumber);
     }
-    
+    if (batchId != null) {
+      await _prefs.setString(_keyUserBatchId, batchId);
+    }
     if (profilePicture != null) {
       await _prefs.setString(_keyUserProfilePicture, profilePicture);
     }
@@ -81,6 +83,11 @@ class UserSessionService {
     return _prefs.getString(_keyUserPhoneNumber);
   }
 
+  // Get current user batch ID
+  String? getCurrentUserBatchId() {
+    return _prefs.getString(_keyUserBatchId);
+  }
+
   // Get current user profile picture
   String? getCurrentUserProfilePicture() {
     return _prefs.getString(_keyUserProfilePicture);
@@ -94,6 +101,7 @@ class UserSessionService {
     await _prefs.remove(_keyUserFullName);
     await _prefs.remove(_keyUserUsername);
     await _prefs.remove(_keyUserPhoneNumber);
+    await _prefs.remove(_keyUserBatchId);
     await _prefs.remove(_keyUserProfilePicture);
   }
 }
