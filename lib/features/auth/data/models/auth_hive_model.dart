@@ -21,7 +21,6 @@ class AuthHiveModel extends HiveObject{
   @HiveField(3)
   final String? phoneNumber;
 
-
   @HiveField(4)
   final String? password;
 

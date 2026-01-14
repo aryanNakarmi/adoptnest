@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Create Provider
 final logoutUsecaseProvider = Provider<LogoutUsecase>((ref) {
-  final authRepository = ref.read(AuthRepositoryProvider);
+  final authRepository = ref.read(authRepositoryProvider);
   return LogoutUsecase(authRepository: authRepository);
 });
 

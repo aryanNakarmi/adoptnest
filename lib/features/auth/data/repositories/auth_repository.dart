@@ -8,7 +8,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
- final AuthRepositoryProvider = Provider<IAuthRepository>((ref){
+ final authRepositoryProvider = Provider<IAuthRepository>((ref){
     return AuthRepository(authDataSource: ref.read(authLocalDatasourceProvider));
  });
 

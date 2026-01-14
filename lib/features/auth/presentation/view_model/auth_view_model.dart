@@ -1,4 +1,6 @@
+import 'package:adoptnest/features/auth/domain/usecases/get_current_usecase.dart';
 import 'package:adoptnest/features/auth/domain/usecases/login_usecase.dart';
+import 'package:adoptnest/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:adoptnest/features/auth/domain/usecases/register_usecase.dart';
 import 'package:adoptnest/features/auth/presentation/state/auth_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,11 +13,15 @@ class AuthViewModel extends Notifier<AuthState>{
 
   late final RegisterUsecase _registerUsecase;
   late final LoginUsecase _loginUsecase;
+  late final GetCurrentUserUsecase _getCurrentUserUsecase;
+  late final LogoutUsecase _logoutUsecase;
 
   @override
   AuthState build() {
      _registerUsecase =ref.read(registerUseCaseProvider);
      _loginUsecase = ref.read(loginUseCaseProvider);
+     _getCurrentUserUsecase = ref.read(getCurrentUserUsecaseProvider);
+     _logoutUsecase = ref.read(logoutUsecaseProvider);
      return AuthState();
   }
 
@@ -37,58 +43,70 @@ class AuthViewModel extends Notifier<AuthState>{
         phoneNumber: phoneNumber
       );
       final result =await _registerUsecase(params);
-      result.fold(
-        (failure){
-          state = state.copyWith(
+      
+        result.fold(
+          (failure) => state = state.copyWith(
             status: AuthStatus.error,
             errorMessage: failure.message,
-          );
-        }, (isRegistered){
-           
-              state = state.copyWith(status: AuthStatus.registered);
-        
-        
-        }
+          ),
+          (success) => state = state.copyWith(status: AuthStatus.registered),
         );
-  }
-
+      }
 
 //Login
-Future<void> login({
-
-    required String email,
-    required String password,
-
-  }) async {
+Future<void> login({required String email, required String password}) async {
     state = state.copyWith(status: AuthStatus.loading);
 
-await Future.delayed(Duration(seconds: 2));
+    final result = await _loginUsecase(
+      LoginUsecaseParams(email: email, password: password),
+    );
 
-    final params = 
-      LoginUsecaseParams(
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (user) =>
+          state = state.copyWith(status: AuthStatus.authenticated,
+           authEntity: user),
+    );
+
+  Future<void> getCurrentUser() async {
+    state = state.copyWith(status: AuthStatus.loading);
+
+    final result = await _getCurrentUserUsecase();
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.unauthenticated,
+        errorMessage: failure.message,
+      ),
+      (user) =>
+          state = state.copyWith(status: AuthStatus.authenticated, authEntity: user),
+    );
+  }
   
-        email: email,
-        password: password,
+  Future<void> logout() async {
+    state = state.copyWith(status: AuthStatus.loading);
 
-      );
-      final result =await _loginUsecase(params);
-      result.fold(
-        (failure){
-          state = state.copyWith(
-            status: AuthStatus.error,
-            errorMessage: failure.message,
-          );
-        }, (authEntity){
-              state = state.copyWith(
-                status: AuthStatus.authenticated,
-                authEntity:authEntity,
-              );
-            }
-        
-        );
+    final result = await _logoutUsecase();
+
+    result.fold(
+      (failure) => state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: failure.message,
+      ),
+      (success) => state = state.copyWith(
+        status: AuthStatus.unauthenticated,
+        authEntity: null,
+      ),
+    );
   }
 
-
+  void clearError() {
+    state = state.copyWith(errorMessage: null);
+  }
+}
 
   
 }

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Create Provider
 final getCurrentUserUsecaseProvider = Provider<GetCurrentUserUsecase>((ref) {
-  final authRepository = ref.read(AuthRepositoryProvider);
+  final authRepository = ref.read(authRepositoryProvider);
   return GetCurrentUserUsecase(authRepository: authRepository);
 });
 
