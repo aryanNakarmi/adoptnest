@@ -31,7 +31,7 @@ class UserSessionService {
     required String userId,
     required String email,
     required String fullName,
-    required String username,
+    String? username,
     String? phoneNumber,
     String? profilePicture,
   }) async {
@@ -39,7 +39,9 @@ class UserSessionService {
     await _prefs.setString(_keyUserId, userId);
     await _prefs.setString(_keyUserEmail, email);
     await _prefs.setString(_keyUserFullName, fullName);
+    if (username != null) {
     await _prefs.setString(_keyUserUsername, username);
+    }
     if (phoneNumber != null) {
       await _prefs.setString(_keyUserPhoneNumber, phoneNumber);
     }
