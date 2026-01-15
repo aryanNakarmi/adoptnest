@@ -79,4 +79,18 @@ Future<AuthHiveModel> registerUser(AuthHiveModel model) async {
     final users = _authBox.values.where((user)=> user.email == email);
     return users.isNotEmpty;
   }
+
+  //delete user
+  Future<void> deleteUser(String authId) async {
+    await _authBox.delete(authId);
+  }
+  
+    // Update user
+  Future<bool> updateUser(AuthHiveModel user) async {
+    if (_authBox.containsKey(user.authId)) {
+      await _authBox.put(user.authId, user);
+      return true;
+    }
+    return false;
+  }
 }

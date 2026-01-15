@@ -95,4 +95,24 @@ class AuthLocalDatasource implements IAuthDataSource{
     return Future.value(false);
    }
   }
+  
+   @override
+  Future<bool> deleteUser(String authId) async {
+    try {
+      await _hiveService.deleteUser(authId);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  @override
+  Future<bool> updateUser(AuthHiveModel user) async {
+    try {
+      return await _hiveService.updateUser(user);
+    } catch (e) {
+      return false;
+    }
+  }
+
 }
