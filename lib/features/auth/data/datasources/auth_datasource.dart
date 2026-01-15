@@ -8,7 +8,8 @@ abstract interface class IAuthLocalDataSource{
   Future<AuthHiveModel?> getCurrentUser();
   Future<bool> logout();
   //get email exists
-  Future<bool> isExistingEmail(String email);
+  Future<AuthHiveModel?> getUserById(String authId);
+  Future<AuthHiveModel?> getUserByEmail(String email);
   Future<bool> updateUser(AuthHiveModel user);
   Future<bool> deleteUser(String authId);
 }

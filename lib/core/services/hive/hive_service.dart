@@ -93,4 +93,17 @@ Future<AuthHiveModel> registerUser(AuthHiveModel model) async {
     }
     return false;
   }
+    // Get user by email
+  AuthHiveModel? getUserByEmail(String email) {
+    try {
+      return _authBox.values.firstWhere((user) => user.email == email);
+    } catch (e) {
+      return null;
+    }
+  }
+    // Get user by ID
+  AuthHiveModel? getUserById(String authId) {
+    return _authBox.get(authId);
+  }
+
 }

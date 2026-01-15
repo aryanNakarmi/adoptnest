@@ -114,5 +114,23 @@ class AuthLocalDatasource implements IAuthLocalDataSource{
       return false;
     }
   }
+  @override
+  Future<AuthHiveModel?> getUserByEmail(String email) async {
+    try {
+      return _hiveService.getUserByEmail(email);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  
+  @override
+  Future<AuthHiveModel?> getUserById(String authId) async {
+    try {
+      return _hiveService.getUserById(authId);
+    } catch (e) {
+      return null;
+    }
+  }
 
 }
