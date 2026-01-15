@@ -70,6 +70,7 @@ Future<void> login({required String email, required String password}) async {
           state = state.copyWith(status: AuthStatus.authenticated,
            authEntity: user),
     );
+    }
 
   Future<void> getCurrentUser() async {
     state = state.copyWith(status: AuthStatus.loading);
@@ -109,4 +110,3 @@ Future<void> login({required String email, required String password}) async {
 }
 
   
-}
