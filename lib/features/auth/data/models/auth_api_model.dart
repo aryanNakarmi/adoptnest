@@ -27,7 +27,7 @@ class AuthApiModel {
   //toJSON
   Map<String, dynamic> toJson() {
     return {
-      'name': fullName,
+      'fullName': fullName,
       'email': email,
       'phoneNumber': phoneNumber,
       'username': username,
@@ -41,7 +41,7 @@ class AuthApiModel {
   factory AuthApiModel.fromJson(Map<String, dynamic> json) {
     return AuthApiModel(
       id: json['_id'],
-      fullName: json['name'],
+      fullName: json['fullName'],
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       username: json['username'],
