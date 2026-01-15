@@ -133,7 +133,7 @@ class AuthRepository implements IAuthRepository{
       try {
         // Check if email already exists
         final existingUser = await _authDataSource.getUserByEmail(user.email);
-        if (existingUser != null) {
+        if (existingUser  != null) {
           return const Left(
             LocalDatabaseFailure(message: "Email already registered"),
           );

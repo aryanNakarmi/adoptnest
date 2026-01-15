@@ -10,6 +10,7 @@ class AuthApiModel {
   final String? username;
   final String? password;
   final String? profilePicture;
+  final String? role;
 
   AuthApiModel({
     this.id,
@@ -19,6 +20,7 @@ class AuthApiModel {
     this.phoneNumber,
     this.password,
     this.profilePicture,
+    this.role,
 
   });
 
@@ -31,6 +33,7 @@ class AuthApiModel {
       'username': username,
       'password': password,
       'profilePicture': profilePicture,
+      'role': role,
     };
   }
 
@@ -42,6 +45,7 @@ class AuthApiModel {
       email: json['email'],
       phoneNumber: json['phoneNumber'],
       username: json['username'],
+      role: json['role'],
       profilePicture: json['profilePicture']
       );
  

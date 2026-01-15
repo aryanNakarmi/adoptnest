@@ -13,14 +13,36 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProviderStateMixin {
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   //for splash screen time out
   @override
   void initState(){
     super.initState();
+    _setupAnimation();
     _navigateToNext();
   }
 
+  void _setupAnimation() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _animationController.forward();
+  }
     Future<void> _navigateToNext() async {
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
@@ -37,6 +59,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       AppRoutes.pushReplacement(context, const OnboardingScreen());
     }
   }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,11 +73,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/logo1.png', height:120,width: 120,),
+               
+              FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Image.asset(
+                  'assets/images/logo1.png',
+                  height: 120,
+                  width: 120,
+                  filterQuality: FilterQuality.low,
+                ),
+              ),
+            ),
               SizedBox(height: 20,),
-              Text("AdoptNest",
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,)),
+               FadeTransition(
+              opacity: _fadeAnimation,
+              child: const Text(
+                "AdoptNest",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),)
             ],
           ),
         )

@@ -21,7 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _isLoading = false;
+  // bool _isLoading = false;
 
   @override
   void dispose() {
@@ -118,8 +118,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) return "Please enter email";
-                if (!value.contains('@')|| !value.contains(".com"))
+                if (!value.contains('@')|| !value.contains(".com")){
+
                 return "Enter a valid email";
+                }
                 return null;
               },
             ),
