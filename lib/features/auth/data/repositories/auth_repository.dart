@@ -14,9 +14,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthRepository implements IAuthRepository{
 
-    final IAuthDataSource _authDataSource;
+    final IAuthLocalDataSource _authDataSource;
 
-    AuthRepository({ required IAuthDataSource authDataSource}):_authDataSource = authDataSource;
+    AuthRepository({ required IAuthLocalDataSource authDataSource}):_authDataSource = authDataSource;
 
   @override
   Future<Either<Failure, AuthEntity>> getCurrentUser() async {
