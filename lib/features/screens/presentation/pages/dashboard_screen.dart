@@ -1,13 +1,20 @@
 import 'package:adoptnest/app/themes/font_data.dart';
+import 'package:adoptnest/core/services/storage/user_session_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   final VoidCallback? onAdoptTap;
+
 
   const DashboardScreen({super.key, this.onAdoptTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final userSession = ref.watch(userSessionServiceProvider);
+    final fullName = userSession.getCurrentUserFullName() ?? 'User';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 20), // extra padding for FAB
       child: Column(
@@ -24,7 +31,7 @@ class DashboardScreen extends StatelessWidget {
                   children: [
                     Text("Welcome back", style: FontData.body2),
                     const SizedBox(height: 4),
-                    Text("Hello", style: FontData.header1),
+                    Text(fullName, style: FontData.header1),
                   ],
                 ),
                 IconButton(

@@ -32,8 +32,8 @@ class AuthApiModel {
       'phoneNumber': phoneNumber,
       'username': username,
       'password': password,
-      'profilePicture': profilePicture,
-      'role': role,
+      // 'profilePicture': profilePicture, //user will addd it in profile
+      // 'role': role, server assigns
     };
   }
 
@@ -60,6 +60,7 @@ class AuthApiModel {
       phoneNumber: phoneNumber,
       username: username,
       profilePicture: profilePicture,
+      role: role,
     );
   }
 
@@ -73,6 +74,7 @@ class AuthApiModel {
       username: entity.username,
       password: entity.password,
       profilePicture: entity.profilePicture,
+      role: entity.role
 );
   }
 
