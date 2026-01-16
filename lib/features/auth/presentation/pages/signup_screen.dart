@@ -72,7 +72,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       }else if(next.status == AuthStatus.registered){
          SnackbarUtils.showSuccess(
          context,
-         next.errorMessage ?? "Registration Successful"
+         "Registration Successful"
          );
            // Navigate to LoginScreen using AppRoutes after a short delay
     Future.delayed(const Duration(milliseconds: 1500), () {
