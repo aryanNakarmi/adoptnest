@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
-  SignupScreen({super.key});
+  const SignupScreen({super.key});
 
   @override
   ConsumerState<SignupScreen> createState() => _SignupScreenState();
@@ -138,7 +138,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return "Please enter username";
+                  if (value == null || value.isEmpty) return "Please enter Full name";
                   
                   return null;
                 },

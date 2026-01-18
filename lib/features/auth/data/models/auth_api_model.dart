@@ -7,7 +7,6 @@ class AuthApiModel {
   final String fullName;
   final String email;
   final String? phoneNumber;
-  final String? username;
   final String? password;
   final String? profilePicture;
   final String? role;
@@ -16,7 +15,6 @@ class AuthApiModel {
     this.id,
     required this.fullName,
     required this.email,
-    this.username,
     this.phoneNumber,
     this.password,
     this.profilePicture,
@@ -30,7 +28,6 @@ class AuthApiModel {
       'fullName': fullName,
       'email': email,
       'phoneNumber': phoneNumber,
-      'username': username,
       'password': password,
       // 'profilePicture': profilePicture, //user will addd it in profile
       // 'role': role, server assigns
@@ -44,7 +41,6 @@ class AuthApiModel {
       fullName: json['fullName'],
       email: json['email'],
       phoneNumber: json['phoneNumber'],
-      username: json['username'],
       role: json['role'],
       profilePicture: json['profilePicture']
       );
@@ -58,7 +54,6 @@ class AuthApiModel {
       fullName: fullName,
       email: email,
       phoneNumber: phoneNumber,
-      username: username,
       profilePicture: profilePicture,
       role: role,
     );
@@ -71,7 +66,6 @@ class AuthApiModel {
       fullName: entity.fullName,
       email: entity.email,
       phoneNumber: entity.phoneNumber,
-      username: entity.username,
       password: entity.password,
       profilePicture: entity.profilePicture,
       role: entity.role

@@ -143,7 +143,6 @@ class AuthRepository implements IAuthRepository{
           fullName: user.fullName,
           email: user.email,
           phoneNumber: user.phoneNumber,
-          username: user.username,
           password: user.password,
           profilePicture: user.profilePicture,
         );
