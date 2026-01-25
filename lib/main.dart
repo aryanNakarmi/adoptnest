@@ -15,6 +15,7 @@ void main() async {
     ProviderScope(
       overrides: [sharedPreferencesProvider.overrideWithValue(sharedPrefs)],
       child: const App()
+      
     ),
   );
 }
