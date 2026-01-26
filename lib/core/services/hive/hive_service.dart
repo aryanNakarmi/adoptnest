@@ -31,13 +31,16 @@ class HiveService {
       Hive.registerAdapter(AuthHiveModelAdapter());
     }
 
-    if(!Hive.)
+    if(!Hive.isAdapterRegistered(HiveTableConstant.animalReportTypeId)){
+      Hive.registerAdapter(AnimalReportHiveModelAdapter());
+    }
   }
 
   //Open all boxes
   Future<void> _openBoxes() async {
 
     await Hive.openBox<AuthHiveModel>(HiveTableConstant.authTable);
+    await Hive.openBox<AnimalReportHiveModel>(HiveTableConstant.animalReportTable);
 
   }
 
