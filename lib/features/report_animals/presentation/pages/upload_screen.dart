@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:adoptnest/features/report_animals/domain/entities/animal_report_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
