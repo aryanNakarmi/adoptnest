@@ -1,7 +1,8 @@
 
-
 import 'package:adoptnest/features/auth/domain/entities/auth_entity.dart';
-
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'auth_api_model.g.dart';
+@JsonSerializable()
 class AuthApiModel {
   final String? id;
   final String fullName;
@@ -23,29 +24,10 @@ class AuthApiModel {
   });
 
   //toJSON
-  Map<String, dynamic> toJson() {
-    return {
-      'fullName': fullName,
-      'email': email,
-      'phoneNumber': phoneNumber,
-      'password': password,
-      // 'profilePicture': profilePicture, //user will addd it in profile
-      // 'role': role, server assigns
-    };
-  }
+  Map<String, dynamic> toJson() => _$AuthApiModelToJson(this);
 
   //fromJSON
-  factory AuthApiModel.fromJson(Map<String, dynamic> json) {
-    return AuthApiModel(
-      id: json['_id'],
-      fullName: json['fullName'],
-      email: json['email'],
-      phoneNumber: json['phoneNumber'],
-      role: json['role'],
-      profilePicture: json['profilePicture']
-      );
- 
-  }
+  factory AuthApiModel.fromJson(Map<String, dynamic> json) => _$AuthApiModelFromJson(json);
 
   //toEntity
   AuthEntity toEntity() {
