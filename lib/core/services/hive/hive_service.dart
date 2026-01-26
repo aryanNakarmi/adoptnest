@@ -1,5 +1,6 @@
 import 'package:adoptnest/core/constants/hive_table_constant.dart';
 import 'package:adoptnest/features/auth/data/models/auth_hive_model.dart';
+import 'package:adoptnest/features/report_animals/data/models/animal_report_hive_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
@@ -29,6 +30,8 @@ class HiveService {
     if(!Hive.isAdapterRegistered(HiveTableConstant.authTypeId)){
       Hive.registerAdapter(AuthHiveModelAdapter());
     }
+
+    if(!Hive.)
   }
 
   //Open all boxes
@@ -105,5 +108,55 @@ Future<AuthHiveModel> registerUser(AuthHiveModel model) async {
   AuthHiveModel? getUserById(String authId) {
     return _authBox.get(authId);
   }
+
+// ===============================Animal Request Querries====================
+
+Box<AnimalReportHiveModel> get _animalReportBox =>
+    Hive.box<AnimalReportHiveModel>(HiveTableConstant.animalReportTable);
+
+Future<AnimalReportHiveModel> createAnimalReport(
+    AnimalReportHiveModel report) async {
+  await _animalReportBox.put(report.reportId, report);
+  return report;
+}
+
+List<AnimalReportHiveModel> getAllAnimalReports() {
+  return _animalReportBox.values.toList();
+}
+
+List<AnimalReportHiveModel> getMyAnimalReports(String userId) {
+  return _animalReportBox.values
+      .where((r) => r.reportedBy == userId)
+      .toList();
+}
+
+AnimalReportHiveModel? getAnimalReportById(String id) {
+  return _animalReportBox.get(id);
+}
+
+Future<bool> updateAnimalReportStatus(String id, String status) async {
+  final report = _animalReportBox.get(id);
+  if (report != null) {
+    final updated = AnimalReportHiveModel(
+      reportId: report.reportId,
+      species: report.species,
+      location: report.location,
+      description: report.description,
+      imageUrl: report.imageUrl,
+      reportedBy: report.reportedBy,
+      reportedByName: report.reportedByName,
+      status: status,
+      createdAt: report.createdAt,
+      updatedAt: DateTime.now(),
+    );
+    await _animalReportBox.put(id, updated);
+    return true;
+  }
+  return false;
+}
+
+Future<void> deleteAnimalReport(String id) async {
+  await _animalReportBox.delete(id);
+}
 
 }
