@@ -3,7 +3,7 @@ import 'package:adoptnest/features/screens/presentation/pages/adopt_screen.dart'
 import 'package:adoptnest/features/screens/presentation/pages/chat_screen.dart';
 import 'package:adoptnest/features/screens/presentation/pages/dashboard_screen.dart';
 import 'package:adoptnest/features/screens/presentation/pages/profile_screen.dart';
-import 'package:adoptnest/features/screens/presentation/pages/upload_screen.dart';
+import 'package:adoptnest/features/report_animals/presentation/pages/upload_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }),
         const AdoptScreen(),
-        const UploadScreen(),
+        const ReportAnimalsScreen(),
         const ChatScreen(),
         const ProfileScreen(),
       ];
