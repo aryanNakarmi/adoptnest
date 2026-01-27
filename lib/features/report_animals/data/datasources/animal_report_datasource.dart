@@ -6,7 +6,7 @@ import 'package:adoptnest/features/report_animals/data/models/animal_report_hive
 abstract interface class IAnimalReportDataSource {
  
   Future<List<AnimalReportHiveModel>> getAllAnimalReports();
-  Future<AnimalReportHiveModel> getAnimalReportById(String reportId);
+  Future<AnimalReportHiveModel?> getAnimalReportById(String reportId);
   Future<List<AnimalReportHiveModel>> getReportsBySpecies(
     String species,
   );
@@ -15,7 +15,7 @@ abstract interface class IAnimalReportDataSource {
     AnimalReportHiveModel report,  
   );
 
-  Future<AnimalReportHiveModel> updateReportStatus(
+  Future<AnimalReportHiveModel?> updateReportStatus(
     String reportId,
     String newStatus,
   );

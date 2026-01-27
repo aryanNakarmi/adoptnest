@@ -172,10 +172,10 @@ Future<bool> updateAnimalReportStatus(String id, String status) async {
   return false;
 }
 
- Future<String?> uploadPhoto(File photo) async {
+ Future<String> uploadPhoto(File photo) async {
     try {
       if (!photo.existsSync()) {
-        return null;
+        throw Exception("Photo file does not exist");
       }
 
       final directory = await getApplicationDocumentsDirectory();
