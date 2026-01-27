@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/core/constants/hive_table_constant.dart';
 import 'package:adoptnest/features/auth/data/models/auth_hive_model.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_hive_model.dart';
@@ -135,7 +137,19 @@ List<AnimalReportHiveModel> getMyAnimalReports(String userId) {
 
 AnimalReportHiveModel? getAnimalReportById(String id) {
   return _animalReportBox.get(id);
-}
+}  
+Future<List<AnimalReportHiveModel>> getReportsBySpecies(
+      String species) async {
+    try {
+      if (species.isEmpty) return [];
+      return _animalReportBox.values
+          .where((report) =>
+              report.species.toLowerCase() == species.toLowerCase())
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
 
 Future<bool> updateAnimalReportStatus(String id, String status) async {
   final report = _animalReportBox.get(id);
@@ -158,6 +172,21 @@ Future<bool> updateAnimalReportStatus(String id, String status) async {
   return false;
 }
 
+ Future<String?> uploadPhoto(File photo) async {
+    try {
+      if (!photo.existsSync()) {
+        return null;
+      }
+
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_photo.jpg';
+      final savedImage = await photo.copy('${directory.path}/$fileName');
+
+      return savedImage.path;
+    } catch (e) {
+      throw Exception('Failed to upload photo: $e');
+    }
+  }
 Future<void> deleteAnimalReport(String id) async {
   await _animalReportBox.delete(id);
 }

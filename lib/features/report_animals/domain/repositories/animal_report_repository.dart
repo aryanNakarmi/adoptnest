@@ -5,10 +5,10 @@ import '../entities/animal_report_entity.dart';
 
 abstract interface class IAnimalReportRepository {
   // Get all reports
-  Future<Either<Failure, List<AnimalReportEntity>>> getAllReports();
+  Future<Either<Failure, List<AnimalReportEntity>>> getAllAnimalReports();
 
   // Get single report by ID
-  Future<Either<Failure, AnimalReportEntity>> getReportById(String reportId);
+  Future<Either<Failure, AnimalReportEntity>> getAnimalReportById(String reportId);
 
   // Get reports filtered by species (search)
   Future<Either<Failure, List<AnimalReportEntity>>> getReportsBySpecies(
@@ -19,8 +19,8 @@ abstract interface class IAnimalReportRepository {
   Future<Either<Failure, List<AnimalReportEntity>>> getMyReports(String userId);
 
   // Create new report 
-  Future<Either<Failure, AnimalReportEntity>> createReport(
-    AnimalReportEntity report,
+  Future<Either<Failure, AnimalReportEntity>> createAnimalReport(
+    AnimalReportEntity report,  
   );
 
   // Update report status (pending -> in-progress -> rescued)
