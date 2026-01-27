@@ -20,7 +20,7 @@ final getMyReportsUsecaseProvider =
     Provider<GetMyReportsUsecase>((ref) {
   final repository = ref.read(animalReportRepositoryProvider);
   return GetMyReportsUsecase(repository: repository);
-});
+}); 
 
 class GetMyReportsUsecase
     implements UsecaseWithParams<List<AnimalReportEntity>, GetMyReportsParams> {
