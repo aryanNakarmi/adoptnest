@@ -30,7 +30,7 @@ class AnimalReportHiveModel extends HiveObject {
   final String reportedByName;
 
   @HiveField(7)
-  final String status;
+  final String status; 
 
   @HiveField(8)
   final DateTime createdAt;
@@ -51,23 +51,7 @@ class AnimalReportHiveModel extends HiveObject {
     this.updatedAt,
   }) : reportId = reportId ?? const Uuid().v4();
 
-  // From Entity
-  factory AnimalReportHiveModel.fromEntity(AnimalReportEntity entity) {
-    return AnimalReportHiveModel(
-      reportId: entity.reportId,
-      species: entity.species,
-      location: entity.location,
-      description: entity.description,
-      imageUrl: entity.imageUrl,
-      reportedBy: entity.reportedBy,
-      reportedByName: entity.reportedByName,
-      status: entity.status,
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-    );
-  }
-
-  // To Entity
+ 
   AnimalReportEntity toEntity() {
     return AnimalReportEntity(
       reportId: reportId,
@@ -77,16 +61,50 @@ class AnimalReportHiveModel extends HiveObject {
       imageUrl: imageUrl,
       reportedBy: reportedBy,
       reportedByName: reportedByName,
-      status: status,
+      status: _stringToStatus(status), // Convert String to Enum
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
   }
 
-  // To Entity List
+  factory AnimalReportHiveModel.fromEntity(AnimalReportEntity entity) {
+    return AnimalReportHiveModel(
+      reportId: entity.reportId,
+      species: entity.species,
+      location: entity.location,
+      description: entity.description,
+      imageUrl: entity.imageUrl,
+      reportedBy: entity.reportedBy,
+      reportedByName: entity.reportedByName,
+      status: entity.status.name, 
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    );
+  }
+
+  static AnimalReportStatus _stringToStatus(String statusString) {
+    switch (statusString) {
+      case 'pending':
+        return AnimalReportStatus.pending;
+      case 'approved':
+        return AnimalReportStatus.approved;
+      case 'rejected':
+        return AnimalReportStatus.rejected;
+      default:
+        return AnimalReportStatus.pending;
+    }
+  }
+
+
   static List<AnimalReportEntity> toEntityList(
     List<AnimalReportHiveModel> models,
   ) {
     return models.map((model) => model.toEntity()).toList();
+  }
+
+  static List<AnimalReportHiveModel> fromEntityList(
+    List<AnimalReportEntity> entities,
+  ) {
+    return entities.map((entity) => AnimalReportHiveModel.fromEntity(entity)).toList();
   }
 }

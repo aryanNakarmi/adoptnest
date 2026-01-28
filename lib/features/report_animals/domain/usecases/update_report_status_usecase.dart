@@ -9,7 +9,7 @@ import '../entities/animal_report_entity.dart';
 
 class UpdateReportStatusParams extends Equatable {
   final String reportId;
-  final String newStatus;
+  final AnimalReportStatus newStatus;
 
   const UpdateReportStatusParams({required this.reportId, required this.newStatus});
 
@@ -32,6 +32,6 @@ class UpdateReportStatusUsecase
 
   @override
   Future<Either<Failure, AnimalReportEntity>> call(UpdateReportStatusParams params) {
-    return _repository.updateReportStatus(params.reportId, params.newStatus);
+    return _repository.updateReportStatus(params.reportId, params.newStatus.name);
   }
 }
