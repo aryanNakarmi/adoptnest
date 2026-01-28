@@ -15,7 +15,7 @@ class AnimalReportEntity extends Equatable {
   final String imageUrl;
   final String reportedBy; 
   final String reportedByName; 
-  final String status; // pending, rescued
+  final AnimalReportStatus status; 
   final DateTime createdAt;
   final DateTime? updatedAt; 
 
