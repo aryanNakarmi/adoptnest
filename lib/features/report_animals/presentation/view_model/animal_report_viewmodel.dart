@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/features/report_animals/domain/usecases/get_all_reports_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/create_animal_report_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/get_my_report_usecase.dart';
@@ -16,7 +18,7 @@ final animalReportViewModelProvider =
 );
 
 class AnimalReportViewModel extends Notifier<AnimalReportState> {
-  // Inject all 8 usecases
+  
   late final GetAllAnimalReportsUsecase _getAllReportsUsecase;
   late final GetAnimalReportByIdUsecase _getReportByIdUsecase;
   late final GetReportsBySpeciesUsecase _getReportsBySpeciesUsecase;

@@ -1,227 +1,390 @@
 import 'dart:io';
+
 import 'package:adoptnest/features/report_animals/domain/entities/animal_report_entity.dart';
+import 'package:adoptnest/features/report_animals/presentation/state/animal_report_state.dart';
+import 'package:adoptnest/features/report_animals/presentation/view_model/animal_report_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:intl/intl.dart';
-
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/utils/snackbar_utils.dart';
 
-class ReportAnimalPage extends ConsumerStatefulWidget {
-  const ReportAnimalPage({super.key});
+class UploadReportScreen extends ConsumerStatefulWidget {
+  const UploadReportScreen({super.key});
 
   @override
-  ConsumerState<ReportAnimalPage> createState() => _ReportAnimalPageState();
+  ConsumerState<UploadReportScreen> createState() =>
+      _UploadReportScreenState();
 }
 
-class _ReportAnimalPageState extends ConsumerState<ReportAnimalPage> {
-  final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
-
-  final TextEditingController _speciesController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+class _UploadReportScreenState extends ConsumerState<UploadReportScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _picker = ImagePicker();
 
-  String _timestamp = '';
+  File? _image;
   String? _uploadedPhotoUrl;
 
-  @override
-  void initState() {
-    super.initState();
-    _updateTimestamp();
-  }
-
-  void _updateTimestamp() {
-    _timestamp = DateFormat('MMM dd, yyyy hh:mm a').format(DateTime.now());
-  }
+  final _speciesController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
 
   @override
   void dispose() {
     _speciesController.dispose();
-    _locationController.dispose();
     _descriptionController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSubmit() async {
-    if (_formKey.currentState!.validate()) {
-      if (_uploadedPhotoUrl == null) {
-        SnackbarUtils.showError(context, 'Please upload a photo');
-        return;
+  Future<bool> _requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (!status.isGranted) {
+      if (mounted) {
+        SnackbarUtils.showError(context, 'Camera permission denied');
       }
+      return false;
+    }
+    return true;
+  }
 
-      final report = AnimalReportEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        species: _speciesController.text.trim(),
-        location: _locationController.text.trim(),
-        description: _descriptionController.text.trim(),
-        imageUrl: _uploadedPhotoUrl!,
-        status: 'pending',
-        createdAt: DateTime.now(),
+ 
+  Future<void> _openCamera() async {
+    final hasPermission = await _requestCameraPermission();
+    if (!hasPermission) return;
+
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
       );
 
+      if (photo == null) return;
+
+      final imageFile = File(photo.path);
+      setState(() => _image = imageFile);
+
+      // Upload photo using viewmodel
+      if (mounted) {
+        await ref
+            .read(animalReportViewModelProvider.notifier)
+            .uploadPhoto(imageFile);
+      }
+    } catch (e) {
+      if (mounted) {
+        SnackbarUtils.showError(context, 'Failed to pick image: $e');
+      }
+    }
+  }
+
+ 
+  Future<void> _handleSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final state = ref.read(animalReportViewModelProvider);
+
+    if (state.uploadedPhotoUrl == null) {
+      SnackbarUtils.showError(context, 'Please capture a photo');
+      return;
+    }
+
+    final report = AnimalReportEntity(
+      reportId: const Uuid().v4(),
+      species: _speciesController.text.trim(),
+      location: _locationController.text.trim(),
+      description: _descriptionController.text.trim(),
+      imageUrl: state.uploadedPhotoUrl!,
+      reportedBy: 'user_id_here', // Replace with auth user later
+      reportedByName: 'User Name',
+      status: AnimalReportStatus.pending,
+      createdAt: DateTime.now(),
+    );
+
+    if (mounted) {
       await ref
           .read(animalReportViewModelProvider.notifier)
           .createReport(report);
     }
   }
 
-  Future<bool> _requestPermission(Permission permission) async {
-    final status = await permission.status;
-    if (status.isGranted) return true;
+  void _setupStateListener() {
+    ref.listen<AnimalReportState>(
+      animalReportViewModelProvider,
+      (previous, next) {
+        if (next.status == AnimalReportViewStatus.created) {
+          SnackbarUtils.showSuccess(context, 'Animal reported successfully 🐾');
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        }
 
-    if (status.isDenied) {
-      final result = await permission.request();
-      return result.isGranted;
-    }
-
-    if (status.isPermanentlyDenied) {
-      _showPermissionDeniedDialog();
-      return false;
-    }
-    return false;
-  }
-
-  void _showPermissionDeniedDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Permission Required"),
-        content: const Text(
-          "This feature requires permission to access your camera or gallery.",
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          TextButton(onPressed: openAppSettings, child: const Text('Open Settings')),
-        ],
-      ),
+        if (next.status == AnimalReportViewStatus.error &&
+            next.errorMessage != null) {
+          SnackbarUtils.showError(context, next.errorMessage!);
+        }
+      },
     );
   }
+  @override
+void initState() {
+  super.initState();
+  _setupStateListener();
+}
 
-  Future<void> _pickFromCamera() async {
-    final hasPermission = await _requestPermission(Permission.camera);
-    if (!hasPermission) return;
-
-    final XFile? photo =
-        await _imagePicker.pickImage(source: ImageSource.camera, imageQuality: 80);
-
-    if (photo != null) {
-      setState(() => _selectedImage = File(photo.path));
-      final url = await ref
-          .read(animalReportViewModelProvider.notifier)
-          .uploadPhoto(File(photo.path));
-      _uploadedPhotoUrl = url;
-    }
-  }
-
-  Future<void> _pickFromGallery() async {
-    final XFile? image =
-        await _imagePicker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-
-    if (image != null) {
-      setState(() => _selectedImage = File(image.path));
-      final url = await ref
-          .read(animalReportViewModelProvider.notifier)
-          .uploadPhoto(File(image.path));
-      _uploadedPhotoUrl = url;
-    }
-  }
-
-  void _showMediaPicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(leading: const Icon(Icons.camera), title: const Text('Camera'), onTap: _pickFromCamera),
-          ListTile(leading: const Icon(Icons.photo), title: const Text('Gallery'), onTap: _pickFromGallery),
-        ],
-      ),
-    );
-  }
-
-  void _clearForm() {
-    _speciesController.clear();
-    _locationController.clear();
-    _descriptionController.clear();
-    setState(() => _selectedImage = null);
-  }
 
   @override
   Widget build(BuildContext context) {
-    final reportState = ref.watch(animalReportViewModelProvider);
-
-    ref.listen<AnimalReportState>(animalReportViewModelProvider, (prev, next) {
-      if (next.status == AnimalReportStatus.created) {
-        SnackbarUtils.showSuccess(context, 'Animal reported successfully!');
-        _clearForm();
-        Navigator.pop(context);
-      } else if (next.status == AnimalReportStatus.error && next.errorMessage != null) {
-        SnackbarUtils.showError(context, next.errorMessage!);
-      }
-    });
+   
+    final state = ref.watch(animalReportViewModelProvider);
+    final isLoading = state.status == AnimalReportViewStatus.loading;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Report Animal')),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                  onTap: _showMediaPicker,
-                  child: _selectedImage == null
-                      ? Container(
-                          height: 250,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Center(child: Text("Upload Photo")),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.file(_selectedImage!, height: 250, fit: BoxFit.cover),
-                        ),
+        child: Column(
+          children: [
+            _buildHeader(context),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildPhotoSection(),
+                      const SizedBox(height: 28),
+                      _buildSpeciesField(),
+                      const SizedBox(height: 16),
+                      _buildLocationField(),
+                      const SizedBox(height: 16),
+                      _buildDescriptionField(),
+                      const SizedBox(height: 32),
+                      _buildSubmitButton(isLoading),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _speciesController,
-                  decoration: const InputDecoration(labelText: 'Species'),
-                  validator: (v) => v!.isEmpty ? 'Enter species' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _locationController,
-                  decoration: const InputDecoration(labelText: 'Location'),
-                  validator: (v) => v!.isEmpty ? 'Enter location' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: reportState.status == AnimalReportStatus.loading
-                      ? null
-                      : _handleSubmit,
-                  child: reportState.status == AnimalReportStatus.loading
-                      ? const CircularProgressIndicator()
-                      : const Text("Submit"),
-                )
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
+    );
+  }
+
+
+
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Text(
+              'Report an Animal',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoSection() {
+    return GestureDetector(
+      onTap: _openCamera,
+      child: Container(
+        height: 240,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 2,
+          ),
+          color: Colors.grey[100],
+        ),
+        child: _image == null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.camera_alt_outlined,
+                      size: 48,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Tap to capture photo',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: Image.file(
+                  _image!,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildSpeciesField() {
+    return TextFormField(
+      controller: _speciesController,
+      decoration: InputDecoration(
+        labelText: 'Animal Species',
+        labelStyle: const TextStyle(color: Colors.black),
+        hintText: 'e.g., Dog, Cat, Bird',
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        prefixIcon: const Icon(Icons.pets, color: Colors.red),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter animal species';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildLocationField() {
+    return TextFormField(
+      controller: _locationController,
+      decoration: InputDecoration(
+        labelText: 'Location',
+        labelStyle: const TextStyle(color: Colors.black),
+        hintText: 'Where was the animal spotted?',
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        prefixIcon: const Icon(Icons.location_on, color: Colors.red),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter location';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      controller: _descriptionController,
+      maxLines: 4,
+      decoration: InputDecoration(
+        labelText: 'Description (Optional)',
+        labelStyle: const TextStyle(color: Colors.black),
+        hintText: 'Describe the animal\'s condition, behavior, etc.',
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.grey, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(bool isLoading) {
+    return ElevatedButton(
+      onPressed: isLoading ? null : _handleSubmit,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red,
+        disabledBackgroundColor: Colors.grey[300],
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Text(
+              'Submit Report',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
     );
   }
 }
