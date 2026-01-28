@@ -1,5 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+enum AnimalReportStatus {
+  pending,
+  approved,
+  rejected,
+}
+
+
 class AnimalReportEntity extends Equatable {
   final String reportId;
   final String species;
