@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/animal_report_entity.dart';
 
-enum AnimalReportStatus {
+enum AnimalReportViewStatus {
   initial,
   loading,
   loaded,
@@ -12,7 +12,7 @@ enum AnimalReportStatus {
 }
 
 class AnimalReportState extends Equatable {
-  final AnimalReportStatus status;
+  final AnimalReportViewStatus status;
 
   final List<AnimalReportEntity> reports;
   final List<AnimalReportEntity> pendingReports;
@@ -24,7 +24,7 @@ class AnimalReportState extends Equatable {
   final String? uploadedPhotoUrl;
 
   const AnimalReportState({
-    this.status = AnimalReportStatus.initial,
+    this.status = AnimalReportViewStatus.initial,
     this.reports = const [],
     this.pendingReports = const [],
     this.rescuedReports = const [],
@@ -35,7 +35,7 @@ class AnimalReportState extends Equatable {
   });
 
   AnimalReportState copyWith({
-    AnimalReportStatus? status,
+    AnimalReportViewStatus? status,
     List<AnimalReportEntity>? reports,
     List<AnimalReportEntity>? pendingReports,
     List<AnimalReportEntity>? rescuedReports,
