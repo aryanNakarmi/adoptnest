@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'auth_api_model.g.dart';
 @JsonSerializable()
 class AuthApiModel {
+  @JsonKey(name: '_id')
   final String? id;
   final String fullName;
   final String email;

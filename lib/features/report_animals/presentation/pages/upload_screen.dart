@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:adoptnest/app/routes/app_routes.dart';
+import 'package:adoptnest/features/home/presentation/pages/home_screen.dart';
 import 'package:adoptnest/features/report_animals/domain/entities/animal_report_entity.dart';
 import 'package:adoptnest/features/report_animals/presentation/state/animal_report_state.dart';
 import 'package:adoptnest/features/report_animals/presentation/view_model/animal_report_viewmodel.dart';
@@ -8,48 +10,65 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../../core/utils/snackbar_utils.dart';
 
-class UploadReportScreen extends ConsumerStatefulWidget {
-  const UploadReportScreen({super.key});
+class ReportAnimalScreen extends ConsumerStatefulWidget {
+  const ReportAnimalScreen({super.key});
 
   @override
-  ConsumerState<UploadReportScreen> createState() =>
-      _UploadReportScreenState();
+  ConsumerState<ReportAnimalScreen> createState() =>
+      _ReportAnimalScreenState();
 }
 
-class _UploadReportScreenState extends ConsumerState<UploadReportScreen> {
+class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _picker = ImagePicker();
 
   File? _image;
-  String? _uploadedPhotoUrl;
-
   final _speciesController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _fadeAnimation =
+        Tween<double>(begin: 0, end: 1).animate(_animationController);
+  }
 
   @override
   void dispose() {
     _speciesController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
+    _animationController.dispose();
     super.dispose();
+  }
+
+  void _clearForm() {
+    setState(() {
+      _image = null;
+      _speciesController.clear();
+      _descriptionController.clear();
+      _locationController.clear();
+    });
   }
 
   Future<bool> _requestCameraPermission() async {
     final status = await Permission.camera.request();
     if (!status.isGranted) {
-      if (mounted) {
-        SnackbarUtils.showError(context, 'Camera permission denied');
-      }
+      if (mounted) SnackbarUtils.showError(context, 'Camera permission denied');
       return false;
     }
     return true;
   }
 
- 
   Future<void> _openCamera() async {
     final hasPermission = await _requestCameraPermission();
     if (!hasPermission) return;
@@ -65,25 +84,18 @@ class _UploadReportScreenState extends ConsumerState<UploadReportScreen> {
       final imageFile = File(photo.path);
       setState(() => _image = imageFile);
 
-      // Upload photo using viewmodel
       if (mounted) {
-        await ref
-            .read(animalReportViewModelProvider.notifier)
-            .uploadPhoto(imageFile);
+        await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
       }
     } catch (e) {
-      if (mounted) {
-        SnackbarUtils.showError(context, 'Failed to pick image: $e');
-      }
+      if (mounted) SnackbarUtils.showError(context, 'Failed to pick image: $e');
     }
   }
 
- 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final state = ref.read(animalReportViewModelProvider);
-
     if (state.uploadedPhotoUrl == null) {
       SnackbarUtils.showError(context, 'Please capture a photo');
       return;
@@ -95,123 +107,113 @@ class _UploadReportScreenState extends ConsumerState<UploadReportScreen> {
       location: _locationController.text.trim(),
       description: _descriptionController.text.trim(),
       imageUrl: state.uploadedPhotoUrl!,
-      reportedBy: 'user_id_here', // Replace with auth user later
+      reportedBy: 'user_id_here',
       reportedByName: 'User Name',
       status: AnimalReportStatus.pending,
       createdAt: DateTime.now(),
     );
 
-    if (mounted) {
-      await ref
-          .read(animalReportViewModelProvider.notifier)
-          .createReport(report);
-    }
+    // Call ViewModel
+    await ref.read(animalReportViewModelProvider.notifier).createReport(report);
   }
-
-  void _setupStateListener() {
-    ref.listen<AnimalReportState>(
-      animalReportViewModelProvider,
-      (previous, next) {
-        if (next.status == AnimalReportViewStatus.created) {
-          SnackbarUtils.showSuccess(context, 'Animal reported successfully 🐾');
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        }
-
-        if (next.status == AnimalReportViewStatus.error &&
-            next.errorMessage != null) {
-          SnackbarUtils.showError(context, next.errorMessage!);
-        }
-      },
-    );
-  }
-  @override
-void initState() {
-  super.initState();
-  _setupStateListener();
-}
-
 
   @override
   Widget build(BuildContext context) {
-   
     final state = ref.watch(animalReportViewModelProvider);
     final isLoading = state.status == AnimalReportViewStatus.loading;
 
+    ref.listen<AnimalReportState>(animalReportViewModelProvider, (prev, next) {
+      if (prev != null &&
+          prev.status == AnimalReportViewStatus.loading &&
+          next.status == AnimalReportViewStatus.created) {
+        _animationController.reverse();
+        SnackbarUtils.showSuccess(context, 'Animal reported successfully!');
+        _clearForm();
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) AppRoutes.pushAndRemoveUntil(context, const HomeScreen());
+        });
+      }
+
+      if (next.status == AnimalReportViewStatus.error && next.errorMessage != null) {
+        _animationController.reverse();
+        SnackbarUtils.showError(context, next.errorMessage!);
+      }
+
+      // Show/hide overlay
+      if (next.status == AnimalReportViewStatus.loading) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    });
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 16),
-                      _buildPhotoSection(),
-                      const SizedBox(height: 28),
-                      _buildSpeciesField(),
-                      const SizedBox(height: 16),
-                      _buildLocationField(),
-                      const SizedBox(height: 16),
-                      _buildDescriptionField(),
-                      const SizedBox(height: 32),
-                      _buildSubmitButton(isLoading),
-                      const SizedBox(height: 32),
-                    ],
+      backgroundColor: Colors.grey[50],
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 16),
+                          _buildPhotoSection(),
+                          const SizedBox(height: 24),
+                          _buildSpeciesField(),
+                          const SizedBox(height: 16),
+                          _buildLocationField(),
+                          const SizedBox(height: 16),
+                          _buildDescriptionField(),
+                          const SizedBox(height: 32),
+                          _buildSubmitButton(isLoading),
+                          const SizedBox(height: 16),
+                          _buildClearButton(),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
                   ),
+                ),
+              ],
+            ),
+          ),
+          // Overlay
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: Container(
+              color: Colors.black.withOpacity(0.4),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-
-
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
+        children: const [
+          Expanded(
             child: Text(
               'Report an Animal',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.black87,
               ),
             ),
           ),
@@ -227,30 +229,29 @@ void initState() {
         height: 240,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey[300]!,
-            width: 2,
-          ),
-          color: Colors.grey[100],
+          border: Border.all(color: Colors.grey[300]!, width: 1.5),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
         child: _image == null
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.camera_alt_outlined,
-                      size: 48,
-                      color: Colors.grey[400],
-                    ),
+                    Icon(Icons.camera_alt_outlined, size: 48, color: Colors.grey),
                     const SizedBox(height: 12),
                     Text(
                       'Tap to capture photo',
                       style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -267,92 +268,55 @@ void initState() {
     );
   }
 
-  Widget _buildSpeciesField() {
-    return TextFormField(
-      controller: _speciesController,
-      decoration: InputDecoration(
-        labelText: 'Animal Species',
-        labelStyle: const TextStyle(color: Colors.black),
-        hintText: 'e.g., Dog, Cat, Bird',
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        prefixIcon: const Icon(Icons.pets, color: Colors.red),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter animal species';
-        }
-        return null;
-      },
-    );
-  }
+  Widget _buildSpeciesField() => _buildTextField(
+        controller: _speciesController,
+        label: 'Animal Species',
+        hint: 'e.g., Dog, Cat, Bird',
+        icon: Icons.pets,
+        validator: (val) => val == null || val.isEmpty ? 'Please enter animal species' : null,
+      );
 
-  Widget _buildLocationField() {
-    return TextFormField(
-      controller: _locationController,
-      decoration: InputDecoration(
-        labelText: 'Location',
-        labelStyle: const TextStyle(color: Colors.black),
-        hintText: 'Where was the animal spotted?',
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        prefixIcon: const Icon(Icons.location_on, color: Colors.red),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter location';
-        }
-        return null;
-      },
-    );
-  }
+  Widget _buildLocationField() => _buildTextField(
+        controller: _locationController,
+        label: 'Location',
+        hint: 'Where was the animal spotted?',
+        icon: Icons.location_on,
+        validator: (val) => val == null || val.isEmpty ? 'Please enter location' : null,
+      );
 
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField() => _buildTextField(
+        controller: _descriptionController,
+        label: 'Description (Optional)',
+        hint: 'Describe the animal\'s condition, behavior, etc.',
+        maxLines: 3,
+      );
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    IconData? icon,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
-      controller: _descriptionController,
-      maxLines: 4,
+      controller: controller,
+      maxLines: maxLines,
+      validator: validator,
       decoration: InputDecoration(
-        labelText: 'Description (Optional)',
-        labelStyle: const TextStyle(color: Colors.black),
-        hintText: 'Describe the animal\'s condition, behavior, etc.',
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.grey, width: 1),
-        ),
+        labelText: label,
+        hintText: hint,
+        prefixIcon: icon != null ? Icon(icon, color: Colors.red) : null,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: Colors.grey[300]!, width: 1)),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.red, width: 2)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        fillColor: Colors.white,
+        filled: true,
       ),
     );
   }
@@ -364,27 +328,40 @@ void initState() {
         backgroundColor: Colors.red,
         disabledBackgroundColor: Colors.grey[300],
         padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : const Text(
+                'Submit Report',
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
               ),
-            )
-          : const Text(
-              'Submit Report',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
+      ),
+    );
+  }
+
+  Widget _buildClearButton() {
+    return OutlinedButton(
+      onPressed: _clearForm,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        side: const BorderSide(color: Colors.grey, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: const Text(
+        'Clear Form',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

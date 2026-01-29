@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }),
         const AdoptScreen(),
-        const ReportAnimalPage(),
+        const ReportAnimalScreen(),
         const ChatScreen(),
         const ProfileScreen(),
       ];
