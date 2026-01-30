@@ -10,6 +10,11 @@ abstract interface class IAnimalReportRepository {
   // Get single report by ID
   Future<Either<Failure, AnimalReportEntity>> getAnimalReportById(String reportId);
 
+  // Get reports filtered by species (search)
+  Future<Either<Failure, List<AnimalReportEntity>>> getReportsBySpecies(
+    String species,
+  );
+
   // get current user's reports (dashboard)
   Future<Either<Failure, List<AnimalReportEntity>>> getMyReports(String userId);
 
