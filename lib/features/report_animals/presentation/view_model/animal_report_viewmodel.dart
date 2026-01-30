@@ -223,7 +223,19 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
   }
 
   /// Helpers
+  
+
+  // In animal_report_viewmodel.dart
+
+void resetUploadedPhoto() {
+  state = state.copyWith(
+    uploadedPhotoUrl: null,
+    resetUploadedPhotoUrl: true,
+  );
+}
+
   void clearError() {
+    
     state = state.copyWith(resetErrorMessage: true);
   }
 
@@ -231,9 +243,6 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
     state = state.copyWith(resetSelectedReport: true);
   }
 
-  void clearUploadedPhotoUrl() {
-    state = state.copyWith(resetUploadedPhotoUrl: true);
-  }
 
   void resetState() {
     state = const AnimalReportState();

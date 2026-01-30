@@ -22,13 +22,6 @@ class HiveService {
      Hive.init(path);
     _registerAdapters();
 
-     // Clear corrupted data
-    try {
-      await Hive.deleteBoxFromDisk(HiveTableConstant.animalReportTable);
-    } catch (e) {
-      print('Box already deleted or error: $e');
-    }
-    
 
     await _openBoxes();
    

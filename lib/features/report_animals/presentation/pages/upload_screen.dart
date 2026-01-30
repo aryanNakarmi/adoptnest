@@ -58,6 +58,8 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       _descriptionController.clear();
       _locationController.clear();
     });
+    // Reset uploaded photo in state
+    ref.read(animalReportViewModelProvider.notifier).resetUploadedPhoto();
   }
 
   Future<bool> _requestCameraPermission() async {
@@ -93,9 +95,8 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       final imageFile = File(photo.path);
       setState(() => _image = imageFile);
 
-      if (mounted) {
-        await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
-      }
+      // Upload immediately
+      await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
     } catch (e) {
       if (mounted) SnackbarUtils.showError(context, 'Failed to pick image: $e');
     }
@@ -116,9 +117,8 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       final imageFile = File(photo.path);
       setState(() => _image = imageFile);
 
-      if (mounted) {
-        await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
-      }
+      // Upload immediately
+      await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
     } catch (e) {
       if (mounted) SnackbarUtils.showError(context, 'Failed to pick image: $e');
     }
@@ -170,12 +170,7 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
   }
 
   Future<void> _handleSubmit() async {
-    print('Submit button pressed!'); // Debug log
-    
-    if (!_formKey.currentState!.validate()) {
-      print('Form validation failed');
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     final state = ref.read(animalReportViewModelProvider);
     if (state.uploadedPhotoUrl == null) {
@@ -188,15 +183,12 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       species: _speciesController.text.trim(),
       location: _locationController.text.trim(),
       description: _descriptionController.text.trim(),
-      imageUrl: state.uploadedPhotoUrl!,
+      imageUrl: state.uploadedPhotoUrl!, // Already uploaded
       reportedBy: 'user_id_here',
       status: AnimalReportStatus.pending,
       createdAt: DateTime.now(),
     );
 
-    print('Creating report: $report'); // Debug log
-    
-    // Call ViewModel
     await ref.read(animalReportViewModelProvider.notifier).createReport(report);
   }
 
@@ -234,7 +226,6 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       backgroundColor: Colors.grey[50],
       body: Stack(
         children: [
-          // Main Content - Always tappable
           SafeArea(
             child: Column(
               children: [
@@ -268,8 +259,6 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
               ],
             ),
           ),
-          
-          // Loading Overlay - Only shown when loading
           if (isLoading)
             IgnorePointer(
               ignoring: false,
