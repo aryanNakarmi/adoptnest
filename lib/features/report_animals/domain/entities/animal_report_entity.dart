@@ -8,7 +8,7 @@ enum AnimalReportStatus {
 
 
 class AnimalReportEntity extends Equatable {
-  final String reportId;
+  final String? reportId;
   final String species;
   final String location;
   final String? description; 
@@ -19,7 +19,7 @@ class AnimalReportEntity extends Equatable {
   final DateTime? updatedAt; 
 
   const AnimalReportEntity({
-    required this.reportId,
+    this.reportId,
     required this.species,
     required this.location,
     this.description,

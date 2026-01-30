@@ -10,7 +10,7 @@ final animalReportLocalDatasourceProvider =
   return AnimalReportLocalDatasource(hiveService: hiveService);
 });
 
-class AnimalReportLocalDatasource implements IAnimalReportDataSource {
+class AnimalReportLocalDatasource implements IAnimalReportLocalDataSource {
   final HiveService _hiveService;
 
   AnimalReportLocalDatasource({required HiveService hiveService})
