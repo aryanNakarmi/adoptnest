@@ -13,8 +13,8 @@ class ApiEndpoints {
 
 static const bool isPhysicalDevice = true;
 
-  // static const String compIpAddress = "192.168.1.6";  //for home
-  static const String compIpAddress = "10.1.25.186"; //college
+  static const String compIpAddress = "192.168.1.3";  //for home
+  // static const String compIpAddress = "10.1.25.186"; //college
 
   static String get baseUrl {
     if (isPhysicalDevice) {
@@ -42,17 +42,32 @@ static const bool isPhysicalDevice = true;
   static String userById(String id) => '/users/$id';
   static String updateUser(String id) => '/users/$id'; // PUT for profile update
 
-  // =================== Pets / Animals ===================
-  static const String pets = '/pets';
-  static String petById(String id) => '/pets/$id'; // GET, PUT, DELETE
+  
+// =================== Animal Reports ===================
 
-  // =================== Adoption Requests ===================
-  static const String adoptions = '/adoptions';
-  static String adoptionById(String id) => '/adoptions/$id'; // GET, PUT, DELETE
+// Create report
+static const String createReport = '/reports';
 
-  // =================== Reports (Lost/Found Pets) ===================
-  static const String reports = '/reports';
-  static String reportById(String id) => '/reports/$id'; // GET, PUT, DELETE
+// Upload report image
+static const String uploadReportImage = '/reports/upload-photo';
+
+// Get my reports
+static const String myReports = '/reports/my-reports';
+
+// Get all reports (admin)
+static const String allReports = '/reports/all';
+
+// Get report by ID
+static String reportById(String id) => '/reports/$id';
+
+// Delete report
+static String deleteReport(String id) => '/reports/$id';
+
+// Update report status
+static String updateReportStatus(String id) => '/reports/$id/status';
+
+// Filter by species
+static String reportsBySpecies(String species) => '/reports/species/$species';
 
 
 }
