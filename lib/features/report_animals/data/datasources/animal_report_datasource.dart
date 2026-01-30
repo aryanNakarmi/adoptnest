@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adoptnest/features/report_animals/data/models/animal_report_api_model.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_hive_model.dart';
 
 
@@ -24,16 +25,16 @@ abstract interface class IAnimalReportLocalDataSource {
 }
 
 abstract interface class IAnimalReportRemoteDataSource {
-  Future<List<AnimalReportHiveModel>> getAllAnimalReports();
-  Future<AnimalReportHiveModel?> getAnimalReportById(String reportId);
-  Future<List<AnimalReportHiveModel>> getReportsBySpecies(String species);
-  Future<List<AnimalReportHiveModel>> getMyReports();
+  Future<List<AnimalReportApiModel>> getAllAnimalReports();
+  Future<AnimalReportApiModel?> getAnimalReportById(String reportId);
+  Future<List<AnimalReportApiModel>> getReportsBySpecies(String species);
+  Future<List<AnimalReportApiModel>> getMyReports();
 
-  Future<AnimalReportHiveModel> createAnimalReport(
-    AnimalReportHiveModel report,
+  Future<AnimalReportApiModel> createAnimalReport(
+    AnimalReportApiModel report,
   );
 
-  Future<AnimalReportHiveModel?> updateReportStatus(
+  Future<AnimalReportApiModel?> updateReportStatus(
     String reportId,
     String newStatus,
   );
