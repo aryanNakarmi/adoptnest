@@ -52,8 +52,17 @@ class AuthRemoteDatasource implements IAuthRemoteDataSource {
         fullName: user.fullName,
         role: user.role,
       );
+
+       // Save token to TokenService
+      final token = response.data['token'];
+      // Later store token in secure storage
+      await _tokenService.saveToken(token);
+       
       return user;
+      
+      
     }
+
     return null;
   }
 
