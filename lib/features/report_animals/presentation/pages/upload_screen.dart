@@ -69,6 +69,15 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
     return true;
   }
 
+  Future<bool> _requestGalleryPermission() async {
+    final status = await Permission.photos.request();
+    if (!status.isGranted) {
+      if (mounted) SnackbarUtils.showError(context, 'Gallery permission denied');
+      return false;
+    }
+    return true;
+  }
+
   Future<void> _openCamera() async {
     final hasPermission = await _requestCameraPermission();
     if (!hasPermission) return;
@@ -92,8 +101,81 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
     }
   }
 
+  Future<void> _openGallery() async {
+    final hasPermission = await _requestGalleryPermission();
+    if (!hasPermission) return;
+
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+
+      if (photo == null) return;
+
+      final imageFile = File(photo.path);
+      setState(() => _image = imageFile);
+
+      if (mounted) {
+        await ref.read(animalReportViewModelProvider.notifier).uploadPhoto(imageFile);
+      }
+    } catch (e) {
+      if (mounted) SnackbarUtils.showError(context, 'Failed to pick image: $e');
+    }
+  }
+
+  void _showImageSourceBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'Select Image Source',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt, color: Colors.red),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openCamera();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.image, color: Colors.red),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openGallery();
+                },
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text('Cancel'),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
+    print('Submit button pressed!'); // Debug log
+    
+    if (!_formKey.currentState!.validate()) {
+      print('Form validation failed');
+      return;
+    }
 
     final state = ref.read(animalReportViewModelProvider);
     if (state.uploadedPhotoUrl == null) {
@@ -108,11 +190,12 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       description: _descriptionController.text.trim(),
       imageUrl: state.uploadedPhotoUrl!,
       reportedBy: 'user_id_here',
-      reportedByName: 'User Name',
       status: AnimalReportStatus.pending,
       createdAt: DateTime.now(),
     );
 
+    print('Creating report: $report'); // Debug log
+    
     // Call ViewModel
     await ref.read(animalReportViewModelProvider.notifier).createReport(report);
   }
@@ -151,6 +234,7 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
       backgroundColor: Colors.grey[50],
       body: Stack(
         children: [
+          // Main Content - Always tappable
           SafeArea(
             child: Column(
               children: [
@@ -184,19 +268,24 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
               ],
             ),
           ),
-          // Overlay
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Container(
-              color: Colors.black.withOpacity(0.4),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 3,
+          
+          // Loading Overlay - Only shown when loading
+          if (isLoading)
+            IgnorePointer(
+              ignoring: false,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: Container(
+                  color: Colors.black.withOpacity(0.4),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -224,7 +313,7 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
 
   Widget _buildPhotoSection() {
     return GestureDetector(
-      onTap: _openCamera,
+      onTap: _showImageSourceBottomSheet,
       child: Container(
         height: 240,
         decoration: BoxDecoration(
@@ -247,7 +336,7 @@ class _ReportAnimalScreenState extends ConsumerState<ReportAnimalScreen>
                     Icon(Icons.camera_alt_outlined, size: 48, color: Colors.grey),
                     const SizedBox(height: 12),
                     Text(
-                      'Tap to capture photo',
+                      'Tap to capture or select photo',
                       style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 14,

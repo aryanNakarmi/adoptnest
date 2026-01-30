@@ -13,8 +13,7 @@ class AnimalReportEntity extends Equatable {
   final String location;
   final String? description; 
   final String imageUrl;
-  final String reportedBy; 
-  final String reportedByName; 
+  final String reportedBy;
   final AnimalReportStatus status; 
   final DateTime createdAt;
   final DateTime? updatedAt; 
@@ -26,7 +25,6 @@ class AnimalReportEntity extends Equatable {
     this.description,
     required this.imageUrl,
     required this.reportedBy,
-    required this.reportedByName,
     required this.status,
     required this.createdAt,
     this.updatedAt,
@@ -40,7 +38,6 @@ class AnimalReportEntity extends Equatable {
     description,
     imageUrl,
     reportedBy,
-    reportedByName,
     status,
     createdAt,
     updatedAt,

@@ -27,15 +27,12 @@ class AnimalReportHiveModel extends HiveObject {
   final String reportedBy;
 
   @HiveField(6)
-  final String reportedByName;
-
-  @HiveField(7)
   final String status; 
 
-  @HiveField(8)
+  @HiveField(7)
   final DateTime createdAt;
 
-  @HiveField(9)
+  @HiveField(8)
   final DateTime? updatedAt;
 
   AnimalReportHiveModel({
@@ -45,7 +42,6 @@ class AnimalReportHiveModel extends HiveObject {
     this.description,
     required this.imageUrl,
     required this.reportedBy,
-    required this.reportedByName,
     required this.status,
     required this.createdAt,
     this.updatedAt,
@@ -60,7 +56,6 @@ class AnimalReportHiveModel extends HiveObject {
       description: description,
       imageUrl: imageUrl,
       reportedBy: reportedBy,
-      reportedByName: reportedByName,
       status: _stringToStatus(status), // Convert String to Enum
       createdAt: createdAt,
       updatedAt: updatedAt,
@@ -75,7 +70,6 @@ class AnimalReportHiveModel extends HiveObject {
       description: entity.description,
       imageUrl: entity.imageUrl,
       reportedBy: entity.reportedBy,
-      reportedByName: entity.reportedByName,
       status: entity.status.name, 
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
