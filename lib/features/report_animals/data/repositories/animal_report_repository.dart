@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adoptnest/features/report_animals/data/datasources/remote/remote_animal_report_datasource.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adoptnest/core/error/failures.dart';
@@ -11,7 +12,9 @@ import 'package:adoptnest/features/report_animals/data/models/animal_report_hive
 
 final animalReportRepositoryProvider =
     Provider<IAnimalReportRepository>((ref) {
+
   final localDataSource = ref.read(animalReportLocalDatasourceProvider);
+  final remoteDataSource = ref.read(animalReportRemoteDatasourceProvider);
   final networkInfo = ref.read(networkInfoProvider);
   return AnimalReportRepository(
     localDataSource: localDataSource,
