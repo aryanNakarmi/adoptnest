@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:adoptnest/core/api/api_client.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
+import 'package:adoptnest/core/services/storage/token_service.dart';
 import 'package:adoptnest/features/report_animals/data/datasources/animal_report_datasource.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_api_model.dart';
 import 'package:dio/dio.dart';
@@ -11,14 +12,19 @@ final animalReportRemoteDatasourceProvider =
     Provider<AnimalReportRemoteDatasource>((ref) {
   return AnimalReportRemoteDatasource(
     apiClient: ref.read(apiClientProvider),
+    tokenService: ref.read(tokenServiceProvider),
   );
 });
 
 class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
   final ApiClient _apiClient;
+  final TokenService _tokenService;
 
-  AnimalReportRemoteDatasource({required ApiClient apiClient})
-      : _apiClient = apiClient;
+  AnimalReportRemoteDatasource({required ApiClient apiClient,
+  required TokenService tokenService})
+      : _apiClient = apiClient,
+        _tokenService = tokenService
+      ;
 
   @override
   Future<List<AnimalReportApiModel>> getAllAnimalReports() async {
