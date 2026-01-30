@@ -56,7 +56,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     await _localDataSource.createAnimalReport(hiveModel);
   }
 
-  // -------------------- GET ALL --------------------
   @override
   Future<Either<Failure, List<AnimalReportEntity>>> getAllAnimalReports() async {
     if (await _networkInfo.isConnected) {
@@ -81,7 +80,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- GET BY ID --------------------
   @override
   Future<Either<Failure, AnimalReportEntity>> getAnimalReportById(String reportId) async {
     if (await _networkInfo.isConnected) {
@@ -111,7 +109,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- GET BY SPECIES --------------------
   @override
   Future<Either<Failure, List<AnimalReportEntity>>> getReportsBySpecies(String species) async {
     if (await _networkInfo.isConnected) {
@@ -136,7 +133,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- GET MY REPORTS --------------------
   @override
   Future<Either<Failure, List<AnimalReportEntity>>> getMyReports(String userId) async {
     if (await _networkInfo.isConnected) {
@@ -161,7 +157,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- CREATE --------------------
   @override
   Future<Either<Failure, AnimalReportEntity>> createAnimalReport(AnimalReportEntity report) async {
     if (await _networkInfo.isConnected) {
@@ -184,7 +179,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- UPDATE STATUS --------------------
   @override
   Future<Either<Failure, AnimalReportEntity>> updateReportStatus(String reportId, String newStatus) async {
     if (await _networkInfo.isConnected) {
@@ -210,7 +204,6 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- DELETE --------------------
   @override
   Future<Either<Failure, bool>> deleteReport(String reportId) async {
     if (await _networkInfo.isConnected) {
@@ -231,7 +224,7 @@ class AnimalReportRepository implements IAnimalReportRepository {
     }
   }
 
-  // -------------------- UPLOAD PHOTO --------------------
+  
   @override
   Future<Either<Failure, String>> uploadPhoto(File photo) async {
     if (await _networkInfo.isConnected) {
