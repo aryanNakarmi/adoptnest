@@ -142,9 +142,13 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
         ),
       });
 
+      final token = _tokenService.getToken();
       final response = await _apiClient.uploadFile(
         ApiEndpoints.uploadReportImage,
         formData: formData,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'}
+        )
       );
 
       if (response.data['success'] == true) {

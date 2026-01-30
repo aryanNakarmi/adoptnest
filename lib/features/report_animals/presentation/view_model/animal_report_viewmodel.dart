@@ -212,10 +212,13 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
         status: AnimalReportViewStatus.error,
         errorMessage: failure.message,
       ),
-      (photoUrl) => state = state.copyWith(
+      (photoUrl){
+
+       state = state.copyWith(
         status: AnimalReportViewStatus.loaded,
         uploadedPhotoUrl: photoUrl,
-      ),
+      );
+      }
     );
   }
 

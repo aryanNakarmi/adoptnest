@@ -22,6 +22,7 @@ class AnimalReportState extends Equatable {
   final AnimalReportEntity? selectedReport;
   final String? errorMessage;
   final String? uploadedPhotoUrl;
+  //store image name temp
 
   const AnimalReportState({
     this.status = AnimalReportViewStatus.initial,
