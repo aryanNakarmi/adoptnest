@@ -161,7 +161,6 @@ Future<bool> updateAnimalReportStatus(String id, String status) async {
       description: report.description,
       imageUrl: report.imageUrl,
       reportedBy: report.reportedBy,
-      reportedByName: report.reportedByName,
       status: status,
       createdAt: report.createdAt,
       updatedAt: DateTime.now(),

@@ -4,7 +4,6 @@ import 'package:adoptnest/features/report_animals/domain/usecases/get_all_report
 import 'package:adoptnest/features/report_animals/domain/usecases/create_animal_report_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/get_my_report_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/get_report_by_id_usecase.dart';
-import 'package:adoptnest/features/report_animals/domain/usecases/get_report_by_species_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/update_report_status_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/delete_report_usecase.dart';
 import 'package:adoptnest/features/report_animals/domain/usecases/upload_photo_usecase.dart';
@@ -21,7 +20,6 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
   
   late final GetAllAnimalReportsUsecase _getAllReportsUsecase;
   late final GetAnimalReportByIdUsecase _getReportByIdUsecase;
-  late final GetReportsBySpeciesUsecase _getReportsBySpeciesUsecase;
   late final GetMyReportsUsecase _getMyReportsUsecase;
   late final CreateAnimalReportUsecase _createReportUsecase;
   late final UpdateReportStatusUsecase _updateReportStatusUsecase;
@@ -32,7 +30,6 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
   AnimalReportState build() {
     _getAllReportsUsecase = ref.read(getAllAnimalReportsUsecaseProvider);
     _getReportByIdUsecase = ref.read(getAnimalReportByIdUsecaseProvider);
-    _getReportsBySpeciesUsecase = ref.read(getReportsBySpeciesUsecaseProvider);
     _getMyReportsUsecase = ref.read(getMyReportsUsecaseProvider);
     _createReportUsecase = ref.read(createAnimalReportUsecaseProvider);
     _updateReportStatusUsecase = ref.read(updateReportStatusUsecaseProvider);
@@ -80,25 +77,7 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
     );
   }
 
-  /// Search by species
-  Future<void> searchBySpecies(String species) async {
-    state = state.copyWith(status: AnimalReportViewStatus.loading);
 
-    final result = await _getReportsBySpeciesUsecase(
-      GetReportsBySpeciesParams(species: species),
-    );
-
-    result.fold(
-      (failure) => state = state.copyWith(
-        status: AnimalReportViewStatus.error,
-        errorMessage: failure.message,
-      ),
-      (reports) => state = state.copyWith(
-        status: AnimalReportViewStatus.loaded,
-        reports: reports,
-      ),
-    );
-  }
 
   /// Get my reports
   Future<void> getMyReports(String userId) async {
