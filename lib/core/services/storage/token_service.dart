@@ -10,7 +10,7 @@ final tokenServiceProvider = Provider<TokenService>((ref) {
 class TokenService {
   static const String _tokenKey = 'auth_token';
   final SharedPreferences _prefs;
-
+    
   TokenService({required SharedPreferences prefs}) : _prefs = prefs;
 
   // Save token

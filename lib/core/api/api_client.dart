@@ -4,8 +4,8 @@ import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Provider for ApiClient
 final apiClientProvider = Provider<ApiClient>((ref) {
@@ -144,13 +144,12 @@ class _AuthInterceptor extends Interceptor {
   static const String _tokenKey = 'auth_token';
 
   @override
-  void onRequest(
+  Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
     // Skip auth for public endpoints
     final publicEndpoints = [
-
       ApiEndpoints.login,
       ApiEndpoints.register,
     ];
@@ -164,7 +163,10 @@ class _AuthInterceptor extends Interceptor {
         options.path == ApiEndpoints.register;
 
     if (!isPublicGet && !isAuthEndpoint) {
-      final token = await _storage.read(key: _tokenKey);
+      // Read from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(_tokenKey);
+      
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';
       }
@@ -177,9 +179,10 @@ class _AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // Handle 401 Unauthorized - token expired
     if (err.response?.statusCode == 401) {
-      // Clear token and redirect to login
-      _storage.delete(key: _tokenKey);
-      // You can add navigation logic here or use a callback
+      // Clear token from SharedPreferences
+      SharedPreferences.getInstance().then((prefs) {
+        prefs.remove(_tokenKey);
+      });
     }
     handler.next(err);
   }

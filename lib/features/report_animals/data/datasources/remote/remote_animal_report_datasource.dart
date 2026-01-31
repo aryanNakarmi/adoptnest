@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:adoptnest/core/api/api_client.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
-import 'package:adoptnest/core/services/storage/token_service.dart';
 import 'package:adoptnest/features/report_animals/data/datasources/animal_report_datasource.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_api_model.dart';
 import 'package:dio/dio.dart';
@@ -12,19 +11,14 @@ final animalReportRemoteDatasourceProvider =
     Provider<AnimalReportRemoteDatasource>((ref) {
   return AnimalReportRemoteDatasource(
     apiClient: ref.read(apiClientProvider),
-    tokenService: ref.read(tokenServiceProvider),
   );
 });
 
 class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
   final ApiClient _apiClient;
-  final TokenService _tokenService;
 
-  AnimalReportRemoteDatasource({required ApiClient apiClient,
-  required TokenService tokenService})
-      : _apiClient = apiClient,
-        _tokenService = tokenService
-      ;
+  AnimalReportRemoteDatasource({required ApiClient apiClient})
+      : _apiClient = apiClient;
 
   @override
   Future<List<AnimalReportApiModel>> getAllAnimalReports() async {
@@ -58,7 +52,7 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
   @override
   Future<List<AnimalReportApiModel>> getReportsBySpecies(String species) async {
     try {
-      final response = await _apiClient.get('/reports/species/$species');
+      final response = await _apiClient.get(ApiEndpoints.reportsBySpecies(species));
       if (response.data['success'] == true) {
         final List<dynamic> data = response.data['data'];
         return data
@@ -74,7 +68,7 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
   @override
   Future<List<AnimalReportApiModel>> getMyReports() async {
     try {
-      final response = await _apiClient.get('/reports/my-reports');
+      final response = await _apiClient.get(ApiEndpoints.myReports);
       if (response.data['success'] == true) {
         final List<dynamic> data = response.data['data'];
         return data
@@ -109,7 +103,7 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
       String reportId, String newStatus) async {
     try {
       final response = await _apiClient.put(
-        '/reports/$reportId/status',
+        ApiEndpoints.updateReportStatus(reportId),
         data: {'status': newStatus},
       );
       if (response.data['success'] == true) {
@@ -124,8 +118,7 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
   @override
   Future<bool> deleteReport(String reportId) async {
     try {
-      final response =
-          await _apiClient.delete(ApiEndpoints.reportById(reportId));
+      final response = await _apiClient.delete(ApiEndpoints.deleteReport(reportId));
       return response.data['success'] == true;
     } on DioException {
       rethrow;
@@ -142,13 +135,9 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
         ),
       });
 
-      final token = _tokenService.getToken();
       final response = await _apiClient.uploadFile(
         ApiEndpoints.uploadReportImage,
         formData: formData,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'}
-        )
       );
 
       if (response.data['success'] == true) {
