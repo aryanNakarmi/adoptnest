@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:adoptnest/core/api/api_client.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
+import 'package:adoptnest/core/error/failures.dart';
 import 'package:adoptnest/features/report_animals/data/datasources/animal_report_datasource.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_api_model.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -124,28 +126,27 @@ class AnimalReportRemoteDatasource implements IAnimalReportRemoteDataSource {
       rethrow;
     }
   }
+@override
+Future<String> uploadPhoto(File photo) async {
+  final formData = FormData.fromMap({
+    'animalReport': await MultipartFile.fromFile(
+      photo.path,
+      filename: photo.path.split('/').last,
+    ),
+  });
 
-  @override
-  Future<String> uploadPhoto(File photo) async {
-    try {
-      final formData = FormData.fromMap({
-        'animalReport': await MultipartFile.fromFile(
-          photo.path,
-          filename: photo.path.split('/').last,
-        ),
-      });
+  final response = await _apiClient.uploadFile(
+    ApiEndpoints.uploadReportImage,
+    formData: formData,
+  );
 
-      final response = await _apiClient.uploadFile(
-        ApiEndpoints.uploadReportImage,
-        formData: formData,
-      );
-
-      if (response.data['success'] == true) {
-        return response.data['data'] as String;
-      }
-      return '';
-    } on DioException {
-      rethrow;
-    }
+  if (response.data['success'] == true) {
+    return response.data['data'] as String;
+  } else {
+    throw Exception('Upload failed');
   }
+}
+
+
+  
 }

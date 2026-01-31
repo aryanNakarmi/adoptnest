@@ -215,7 +215,7 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
       (photoUrl){
 
        state = state.copyWith(
-        status: AnimalReportViewStatus.loaded,
+        status: AnimalReportViewStatus.initial,
         uploadedPhotoUrl: photoUrl,
       );
       }
