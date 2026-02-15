@@ -13,8 +13,8 @@ class ApiEndpoints {
 
 static const bool isPhysicalDevice = false;
 
-  static const String compIpAddress = "192.168.1.7";  //for home
-  // static const String compIpAddress = "10.1.25.186"; //college
+  // static const String compIpAddress = "192.168.1.7";  //for home
+  static const String compIpAddress = "192.168.137.114"; //windows hotspot
 
   static String get baseUrl {
     if (isPhysicalDevice) {
