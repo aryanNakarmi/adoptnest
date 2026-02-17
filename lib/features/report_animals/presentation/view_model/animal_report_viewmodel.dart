@@ -173,31 +173,36 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
     );
   }
 
-  /// Delete report
-  Future<void> deleteReport(String reportId) async {
-    state = state.copyWith(status: AnimalReportViewStatus.loading);
+ /// Delete report
+Future<bool> deleteReport(String reportId) async {
+  state = state.copyWith(status: AnimalReportViewStatus.loading);
 
-    final result = await _deleteReportUsecase(
-      DeleteReportParams(reportId: reportId),
-    );
+  final result = await _deleteReportUsecase(
+    DeleteReportParams(reportId: reportId),
+  );
 
-    result.fold(
-      (failure) => state = state.copyWith(
+  return result.fold(
+    (failure) {
+      state = state.copyWith(
         status: AnimalReportViewStatus.error,
         errorMessage: failure.message,
-      ),
-      (success) {
-        if (success) {
-          final updatedReports =
-              state.reports.where((r) => r.reportId != reportId).toList();
-          state = state.copyWith(
-            status: AnimalReportViewStatus.deleted,
-            reports: updatedReports,
-          );
-        }
-      },
-    );
-  }
+      );
+      return false;
+    },
+    (success) {
+      if (success) {
+        final updatedReports =
+            state.myReports.where((r) => r.reportId != reportId).toList();
+        state = state.copyWith(
+          status: AnimalReportViewStatus.deleted,
+          myReports: updatedReports,
+        );
+        return true;
+      }
+      return false;
+    },
+  );
+}
 
   /// Upload photo
   Future<void> uploadPhoto(File photo) async {
@@ -221,6 +226,7 @@ class AnimalReportViewModel extends Notifier<AnimalReportState> {
       }
     );
   }
+  
 
   /// Helpers
   

@@ -1,6 +1,7 @@
 import 'package:adoptnest/app/themes/font_data.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
 import 'package:adoptnest/core/services/storage/user_session_service.dart';
+import 'package:adoptnest/features/report_animals/presentation/pages/my_reports_screen.dart';
 import 'package:adoptnest/features/report_animals/presentation/view_model/animal_report_viewmodel.dart';
 import 'package:adoptnest/features/report_animals/presentation/state/animal_report_state.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
-  // ✅ FIX: Correct image URL builder
   String _getFullImageUrl(String imagePath) {
     if (imagePath.startsWith('http')) {
       return imagePath;
@@ -76,9 +76,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: const DecorationImage(
-                image: NetworkImage(
-                  "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg",
-                ),
+                image: AssetImage("assets/images/heropup.jpg"),
                 fit: BoxFit.cover,
               ),
               boxShadow: [
@@ -171,27 +169,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("My Reports", style: FontData.header2),
-                    Consumer(
-                      builder: (context, ref, child) {
-                        final state = ref.watch(animalReportViewModelProvider);
-                        if (state.myReports.isNotEmpty) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade300,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              "${state.myReports.length}",
-                              style: FontData.body2.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyReportsScreen(),
+                          ),
+                        );
                       },
+                      child: Text(
+                        "View All",
+                        style: FontData.body2.copyWith(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -225,7 +218,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       final screenWidth = MediaQuery.of(context).size.width;
                       return Center(
                         child: Container(
-                          width: screenWidth * 0.8, // 80% of the screen width
+                          width: screenWidth * 0.8,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -241,7 +234,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Icon(Icons.report_gmailerrorred_outlined, size: 40, color: Colors.red.shade400),
                               const SizedBox(height: 40),
                               Text(
                                 "No reports yet",
@@ -261,9 +253,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       );
                     }
 
-
-
-
                     return SizedBox(
                       height: 250,
                       child: ListView.builder(
@@ -274,6 +263,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           return Padding(
                             padding: EdgeInsets.only(
                               right: index == state.myReports.length - 1 ? 0 : 12,
+                              left: index == 0 ? 0 : 0,
                             ),
                             child: _buildReportCard(
                               species: report.species ?? "Unknown",
