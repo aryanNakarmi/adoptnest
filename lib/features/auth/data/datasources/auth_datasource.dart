@@ -12,10 +12,15 @@ abstract interface class IAuthLocalDataSource{
   Future<AuthHiveModel?> getUserByEmail(String email);
   Future<bool> updateUser(AuthHiveModel user);
   Future<bool> deleteUser(String authId);
+  
 }
 
 abstract interface class IAuthRemoteDataSource {
   Future<AuthApiModel> register(AuthApiModel user);
   Future<AuthApiModel?> login(String email, String password);
   Future<AuthApiModel?> getUserById(String authId);
+    Future<bool> updateProfile({  
+    required String fullName,
+    required String phoneNumber,
+  });
 }

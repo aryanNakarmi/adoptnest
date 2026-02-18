@@ -79,4 +79,33 @@ class AuthRemoteDatasource implements IAuthRemoteDataSource {
     }
     return user;
   }
+  
+  @override
+Future<bool> updateProfile({
+  required String fullName,
+  required String phoneNumber,
+}) async {
+  final response = await _apiClient.put(
+    '/auth/update-profile',  // ← CHANGE THIS (was: ApiEndpoints.updateProfile(userId))
+    data: {
+      'fullName': fullName,
+      'phoneNumber': phoneNumber,
+    },
+  );
+
+  if (response.data['success'] == true) {
+    // Update session with new data
+    await _userSessionService.saveUserSession(
+      userId: _userSessionService.getCurrentUserId() ?? '',
+      email: _userSessionService.getCurrentUserEmail() ?? '',
+      fullName: fullName,
+      phoneNumber: phoneNumber,
+      profilePicture: _userSessionService.getCurrentUserProfilePicture(),
+      role: _userSessionService.getCurrentUserRole(),
+    );
+    return true;
+  }
+
+  return false;
+}
 }

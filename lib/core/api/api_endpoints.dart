@@ -40,7 +40,7 @@ static const bool isPhysicalDevice = false;
   static const String login = '/auth/login';
   static const String currentUser = '/auth/currentUser';
   static String userById(String id) => '/users/$id';
-  static String updateUser(String id) => '/users/$id'; // PUT for profile update
+  static String updateProfile(String id) => '/users/$id'; // PUT for profile update
 
   
 // =================== Animal Reports ===================
