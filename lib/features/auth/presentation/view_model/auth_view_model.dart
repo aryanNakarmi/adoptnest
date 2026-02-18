@@ -1,3 +1,4 @@
+import 'package:adoptnest/core/services/storage/user_session_service.dart';
 import 'package:adoptnest/features/auth/domain/usecases/get_current_usecase.dart';
 import 'package:adoptnest/features/auth/domain/usecases/login_usecase.dart';
 import 'package:adoptnest/features/auth/domain/usecases/logout_usecase.dart';
@@ -56,10 +57,10 @@ class AuthViewModel extends Notifier<AuthState>{
         );
       }
 
-//Login
-Future<void> login({required String email, required String password}) async {
+  //Login
+  Future<void> login({required String email, required String password}) async {
     state = state.copyWith(status: AuthStatus.loading);
-      await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 2));
     final result = await _loginUsecase(
       LoginUsecaseParams(email: email, password: password),
     );
@@ -69,11 +70,25 @@ Future<void> login({required String email, required String password}) async {
         status: AuthStatus.error,
         errorMessage: failure.message,
       ),
-      (user) =>
-          state = state.copyWith(status: AuthStatus.authenticated,
-           authEntity: user),
+      (user) {
+        // Save user data to session
+        final userSession = ref.read(userSessionServiceProvider);
+        userSession.saveUserSession(
+          userId: user.authId ?? '',
+          email: user.email,
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+          profilePicture: user.profilePicture,
+          role: user.role,
+        );
+
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          authEntity: user,
+        );
+      },
     );
-    }
+  }
 
   Future<void> getCurrentUser() async {
     state = state.copyWith(status: AuthStatus.loading);
@@ -85,8 +100,23 @@ Future<void> login({required String email, required String password}) async {
         status: AuthStatus.unauthenticated,
         errorMessage: failure.message,
       ),
-      (user) =>
-          state = state.copyWith(status: AuthStatus.authenticated, authEntity: user),
+      (user) {
+        // Also save user data to session when getting current user
+        final userSession = ref.read(userSessionServiceProvider);
+        userSession.saveUserSession(
+          userId: user.authId ?? '',
+          email: user.email,
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+          profilePicture: user.profilePicture,
+          role: user.role,
+        );
+
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          authEntity: user,
+        );
+      },
     );
   }
   
@@ -100,10 +130,16 @@ Future<void> login({required String email, required String password}) async {
         status: AuthStatus.error,
         errorMessage: failure.message,
       ),
-      (success) => state = state.copyWith(
-        status: AuthStatus.unauthenticated,
-        authEntity: null,
-      ),
+      (success) {
+        // Clear session on logout
+        final userSession = ref.read(userSessionServiceProvider);
+        userSession.clearSession();
+
+        state = state.copyWith(
+          status: AuthStatus.unauthenticated,
+          authEntity: null,
+        );
+      },
     );
   }
 
@@ -111,5 +147,3 @@ Future<void> login({required String email, required String password}) async {
     state = state.copyWith(errorMessage: null);
   }
 }
-
-  

@@ -9,5 +9,9 @@ abstract interface class IAuthRepository{
   Future<Either<Failure, AuthEntity>> login(String email, String password);
   Future<Either<Failure,AuthEntity>> getCurrentUser();
   Future<Either<Failure, bool>> logout();
+    Future<Either<Failure, bool>> updateProfile({  
+    required String fullName,
+    required String phoneNumber,
+  });
 
 }

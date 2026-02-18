@@ -153,4 +153,23 @@ class AuthRepository implements IAuthRepository{
       }
     }
   }
+  
+  @override
+
+Future<Either<Failure, bool>> updateProfile({
+  required String fullName,
+  required String phoneNumber,
+}) async {
+  try {
+    await _authRemoteDatasource.updateProfile(
+      fullName: fullName,
+      phoneNumber: phoneNumber,
+    );
+    return const Right(true);
+  } catch (e) {
+    return Left(LocalDatabaseFailure(message: e.toString()));
+  }
+}
+  
+  
 }
