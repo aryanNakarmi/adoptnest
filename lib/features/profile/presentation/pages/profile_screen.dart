@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/app/routes/app_routes.dart';
 import 'package:adoptnest/app/themes/font_data.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
@@ -8,6 +10,8 @@ import 'package:adoptnest/features/auth/presentation/pages/login_screen.dart';
 import 'package:adoptnest/features/auth/presentation/view_model/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -23,6 +27,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   bool _isEditing = false;
   bool _isSaving = false;
+  File? _selectedImage;
+  final _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -56,26 +62,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final baseUrl = ApiEndpoints.baseUrl.replaceAll('/api/v1', '');
 
-    // If path already has /profile_pictures, use as is
     if (imagePath.contains('/profile_pictures')) {
       return '$baseUrl${imagePath.startsWith('/') ? '' : '/'}$imagePath';
     }
 
-    // Otherwise prepend /profile_pictures/
     return '$baseUrl/profile_pictures/${imagePath.startsWith('/') ? imagePath.substring(1) : imagePath}';
   }
 
   void _toggleEditMode() {
     setState(() {
       _isEditing = !_isEditing;
+      if (!_isEditing) {
+        _selectedImage = null;
+      }
     });
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final status = await Permission.photos.request();
+      if (!status.isGranted) {
+        SnackbarUtils.showError(context, 'Gallery permission denied');
+        return;
+      }
+
+      final pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      SnackbarUtils.showError(context, 'Error picking image: $e');
+    }
   }
 
   Future<void> _saveProfile() async {
     final fullName = _fullNameController.text.trim();
     final phone = _phoneController.text.trim();
 
-    // Validation
     if (fullName.isEmpty) {
       SnackbarUtils.showError(context, 'Please enter your full name');
       return;
@@ -84,32 +113,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // Call the usecase
+      // Call usecase with optional image
       final result = await ref.read(updateProfileUsecaseProvider).call(
         UpdateProfileUsecaseParams(
           fullName: fullName,
           phoneNumber: phone,
+          profilePicture: _selectedImage,  // Can be null
         ),
       );
 
-      // Handle result
       result.fold(
         (failure) {
-          // Error case
           if (mounted) {
             SnackbarUtils.showError(context, failure.message);
           }
           setState(() => _isSaving = false);
         },
         (success) {
-          // Success case
           if (mounted) {
             SnackbarUtils.showSuccess(context, 'Profile updated successfully');
           }
-          
           setState(() {
             _isSaving = false;
             _isEditing = false;
+            _selectedImage = null;
           });
         },
       );
@@ -151,7 +178,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             },
             child: const Text(
               'Logout',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -271,6 +299,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          // Profile Picture Section
+                          Center(
+                            child: Column(
+                              children: [
+                                ClipOval(
+                                  child: SizedBox(
+                                    width: 100,
+                                    height: 100,
+                                    child: _selectedImage != null
+                                        ? Image.file(
+                                            _selectedImage!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : imageUrl.isNotEmpty
+                                            ? Image.network(
+                                                imageUrl,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return _buildInitialAvatar(
+                                                      fullName);
+                                                },
+                                              )
+                                            : _buildInitialAvatar(fullName),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ElevatedButton.icon(
+                                  onPressed: _pickImage,
+                                  icon: const Icon(Icons.image_outlined),
+                                  label: const Text('Choose Photo'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                                if (_selectedImage != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Text(
+                                      'Photo selected',
+                                      style: FontData.body2.copyWith(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Text Fields
                           _buildProfileTextField(
                             controller: _fullNameController,
                             label: 'Full Name',
@@ -320,14 +400,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
 
-            // Logout Button (Always at bottom)
+            // Logout Button 
             if (!_isEditing)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     _buildLogoutButton(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                   ],
                 ),
               ),
@@ -430,7 +510,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         fillColor: Colors.white,
         filled: true,
       ),
@@ -487,8 +568,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildLogoutButton() {
-    return ElevatedButton(
+Widget _buildLogoutButton() {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.8,
+    child: ElevatedButton(
       onPressed: () => _showLogoutDialog(context),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
@@ -503,6 +586,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           fontSize: 16,
         ),
       ),
-    );
+    ),
+  );
+
   }
 }

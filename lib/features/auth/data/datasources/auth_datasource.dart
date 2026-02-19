@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/features/auth/data/models/auth_api_model.dart';
 import 'package:adoptnest/features/auth/data/models/auth_hive_model.dart';
 
@@ -22,5 +24,6 @@ abstract interface class IAuthRemoteDataSource {
     Future<bool> updateProfile({  
     required String fullName,
     required String phoneNumber,
+    File? profilePicture,
   });
 }
