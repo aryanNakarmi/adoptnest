@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/core/error/failures.dart';
 import 'package:adoptnest/features/auth/domain/entities/auth_entity.dart';
 import 'package:dartz/dartz.dart';
@@ -12,6 +14,7 @@ abstract interface class IAuthRepository{
     Future<Either<Failure, bool>> updateProfile({  
     required String fullName,
     required String phoneNumber,
+    File? profilePicture,
   });
 
 }

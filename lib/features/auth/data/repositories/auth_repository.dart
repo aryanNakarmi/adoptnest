@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adoptnest/core/error/failures.dart';
 import 'package:adoptnest/core/services/connectivity/network_info.dart';
 import 'package:adoptnest/features/auth/data/datasources/auth_datasource.dart';
@@ -155,21 +157,33 @@ class AuthRepository implements IAuthRepository{
   }
   
   @override
-
-Future<Either<Failure, bool>> updateProfile({
-  required String fullName,
-  required String phoneNumber,
-}) async {
-  try {
-    await _authRemoteDatasource.updateProfile(
-      fullName: fullName,
-      phoneNumber: phoneNumber,
-    );
-    return const Right(true);
-  } catch (e) {
-    return Left(LocalDatabaseFailure(message: e.toString()));
+  Future<Either<Failure, bool>> updateProfile({
+    required String fullName,
+    required String phoneNumber,
+    File? profilePicture,
+  }) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final result = await _authRemoteDatasource.updateProfile(
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          profilePicture: profilePicture,
+        );
+        return Right(result);
+      } on DioException catch (e) {
+        return Left(
+          ApiFailure(
+            message: e.response?.data['message'] ?? 'Update failed',
+            statusCode: e.response?.statusCode,
+          ),
+        );
+      } catch (e) {
+        return Left(ApiFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(
+        LocalDatabaseFailure(message: "No internet connection"),
+      );
+    }
   }
-}
-  
-  
 }

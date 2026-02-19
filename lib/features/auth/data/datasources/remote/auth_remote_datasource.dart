@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:adoptnest/core/api/api_client.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
 import 'package:adoptnest/core/services/storage/token_service.dart';
 import 'package:adoptnest/core/services/storage/user_session_service.dart';
 import 'package:adoptnest/features/auth/data/datasources/auth_datasource.dart';
 import 'package:adoptnest/features/auth/data/models/auth_api_model.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //Provider
@@ -81,31 +84,67 @@ class AuthRemoteDatasource implements IAuthRemoteDataSource {
   }
   
   @override
-Future<bool> updateProfile({
-  required String fullName,
-  required String phoneNumber,
-}) async {
-  final response = await _apiClient.put(
-    '/auth/update-profile',  // ← CHANGE THIS (was: ApiEndpoints.updateProfile(userId))
-    data: {
+  Future<bool> updateProfile({
+    required String fullName,
+    required String phoneNumber,
+    File? profilePicture,
+  }) async {
+    final Map<String, dynamic> data = {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
-    },
-  );
+    };
 
-  if (response.data['success'] == true) {
-    // Update session with new data
-    await _userSessionService.saveUserSession(
-      userId: _userSessionService.getCurrentUserId() ?? '',
-      email: _userSessionService.getCurrentUserEmail() ?? '',
-      fullName: fullName,
-      phoneNumber: phoneNumber,
-      profilePicture: _userSessionService.getCurrentUserProfilePicture(),
-      role: _userSessionService.getCurrentUserRole(),
-    );
-    return true;
+    // Only add profilePicture if it's provided
+    if (profilePicture != null) {
+      final formData = FormData.fromMap({
+        'fullName': fullName,
+        'phoneNumber': phoneNumber,
+        'profilePicture': await MultipartFile.fromFile(
+          profilePicture.path,
+          filename: profilePicture.path.split('/').last,
+        ),
+      });
+
+      final response = await _apiClient.put(
+        '/auth/update-profile',
+        data: formData,
+      );
+
+      if (response.data['success'] == true) {
+        final newProfilePicture =
+            response.data['data']?['profilePicture'] ??
+            _userSessionService.getCurrentUserProfilePicture();
+
+        await _userSessionService.saveUserSession(
+          userId: _userSessionService.getCurrentUserId() ?? '',
+          email: _userSessionService.getCurrentUserEmail() ?? '',
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          profilePicture: newProfilePicture,
+          role: _userSessionService.getCurrentUserRole(),
+        );
+        return true;
+      }
+    } else {
+      // No image, just text
+      final response = await _apiClient.put(
+        '/auth/update-profile',
+        data: data,
+      );
+
+      if (response.data['success'] == true) {
+        await _userSessionService.saveUserSession(
+          userId: _userSessionService.getCurrentUserId() ?? '',
+          email: _userSessionService.getCurrentUserEmail() ?? '',
+          fullName: fullName,
+          phoneNumber: phoneNumber,
+          profilePicture: _userSessionService.getCurrentUserProfilePicture(),
+          role: _userSessionService.getCurrentUserRole(),
+        );
+        return true;
+      }
+    }
+
+    return false;
   }
-
-  return false;
-}
 }
