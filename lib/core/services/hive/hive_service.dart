@@ -38,6 +38,10 @@ class HiveService {
     if(!Hive.isAdapterRegistered(HiveTableConstant.animalReportTypeId)){
       Hive.registerAdapter(AnimalReportHiveModelAdapter());
     }
+
+    if(!Hive.isAdapterRegistered(HiveTableConstant.animalPostTypeId)){
+      Hive.registerAdapter(AnimalPostHiveModelAdapter());
+    } 
   }
 
   //Open all boxes
@@ -45,6 +49,7 @@ class HiveService {
 
     await Hive.openBox<AuthHiveModel>(HiveTableConstant.authTable);
     await Hive.openBox<AnimalReportHiveModel>(HiveTableConstant.animalReportTable);
+    await Hive.openBox<AnimalPostHiveModel>(HiveTableConstant.animalPostTable);
 
   }
 
@@ -192,4 +197,31 @@ Future<void> deleteAnimalReport(String id) async {
   await _animalReportBox.delete(id);
 }
 
+
+
+
+// ===============================Animal Post Queries====================
+
+Box<AnimalPostHiveModel> get _animalPostBox =>
+    Hive.box<AnimalPostHiveModel>(HiveTableConstant.animalPostTable);
+
+Future<List<AnimalPostHiveModel>> getAllAnimalPosts() async {
+  return _animalPostBox.values.toList();
+}
+
+AnimalPostHiveModel? getAnimalPostById(String postId) {
+  try {
+    return _animalPostBox.values.firstWhere((p) => p.postId == postId);
+  } catch (e) {
+    return null;
+  }
+}
+
+Future<void> cacheAnimalPost(AnimalPostHiveModel post) async {
+  await _animalPostBox.put(post.postId, post);
+}
+
+Future<void> clearAnimalPostCache() async {
+  await _animalPostBox.clear();
+}
 }

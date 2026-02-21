@@ -71,7 +71,10 @@ static String reportsBySpecies(String species) => '/reports/species/$species';
  
 
 // =================== Animal Posts ===================
+//get all post made by admin
 static const String allAnimalPosts = '/animal-posts';
+
+
 static String animalPostById(String id) => '/animal-posts/$id';
 static const String myAdoptions = '/animal-posts/my-adoptions';
 
