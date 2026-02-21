@@ -68,6 +68,12 @@ static String updateReportStatus(String id) => '/reports/$id/status';
 
 // Filter by species
 static String reportsBySpecies(String species) => '/reports/species/$species';
+ 
+
+// =================== Animal Posts ===================
+static const String allAnimalPosts = '/animal-posts';
+static String animalPostById(String id) => '/animal-posts/$id';
+static const String myAdoptions = '/animal-posts/my-adoptions';
 
 
 }
