@@ -9,4 +9,8 @@ class HiveTableConstant {
 
   static const int animalReportTypeId = 1;
   static const String animalReportTable = 'animal_report_table';
+
+  static const int animalPostTypeId = 2;
+  static const String animalPostTable = 'animal_post_table';
+
 }
