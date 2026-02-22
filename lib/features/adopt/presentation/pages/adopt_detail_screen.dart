@@ -81,8 +81,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                     .read(animalPostViewModelProvider.notifier)
                     .getPostById(widget.postId),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Retry',
-                    style: TextStyle(color: Colors.white)),
+                child:
+                    const Text('Retry', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -99,8 +99,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
         backgroundColor: Colors.transparent,
         leading: Container(
           margin: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(
-              color: Colors.white, shape: BoxShape.circle),
+          decoration:
+              const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
@@ -120,8 +120,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       ? Container(
                           color: Colors.grey[200],
                           child: const Center(
-                            child: Icon(Icons.pets,
-                                size: 72, color: Colors.grey),
+                            child: Icon(Icons.pets, size: 72, color: Colors.grey),
                           ),
                         )
                       : PageView.builder(
@@ -136,8 +135,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                             errorBuilder: (_, __, ___) => Container(
                               color: Colors.grey[200],
                               child: const Center(
-                                  child: Icon(Icons.pets,
-                                      size: 60, color: Colors.grey)),
+                                child: Icon(Icons.pets, size: 60, color: Colors.grey),
+                              ),
                             ),
                           ),
                         ),
@@ -148,11 +147,9 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                   bottom: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color:
-                          isAvailable ? Colors.green : Colors.blue,
+                      color: isAvailable ? Colors.green : Colors.blue,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -171,16 +168,14 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                     bottom: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${_currentPhotoIndex + 1}/${post.photos.length}',
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 12),
+                        style: const TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
@@ -192,8 +187,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
               Container(
                 height: 68,
                 color: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: post.photos.length,
@@ -235,21 +230,18 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title + status
                   Text(
                     post.breed,
                     style: const TextStyle(
                         fontSize: 26, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '${post.species} • ${post.gender}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 15),
-                  ),
+                  Text('${post.species} • ${post.gender}',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 15)),
 
                   const SizedBox(height: 20),
 
-                  // Info grid
+                  // Info grid without Expanded inside Row
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -258,16 +250,13 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       border: Border.all(color: Colors.grey[200]!),
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _InfoItem(label: 'Age', value: '${post.age} months'),
-                        _divider(),
-                        _InfoItem(label: 'Gender', value: post.gender),
-                        _divider(),
                         _InfoItem(label: 'Species', value: post.species),
-                        _divider(),
-                        Expanded(
-                          child: _InfoItem(
-                              label: 'Location', value: post.location),
+                        _InfoItem(label: 'Gender', value: post.gender),
+                        _InfoItem(label: 'Age', value: '${post.age} months'),
+                        Flexible(
+                          child: _InfoItem(label: 'Location', value: post.location),
                         ),
                       ],
                     ),
@@ -275,9 +264,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Description
-                  if (post.description != null &&
-                      post.description!.isNotEmpty) ...[
+                  if (post.description != null && post.description!.isNotEmpty) ...[
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -309,8 +296,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Current Status',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 12)),
+                            style: TextStyle(color: Colors.white70, fontSize: 12)),
                         const SizedBox(height: 4),
                         Text(
                           isAvailable ? 'Available' : 'Adopted',
@@ -321,10 +307,10 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                         ),
                         Text(
                           isAvailable
-                              ? 'This animal is looking for a home 🐾'
-                              : 'This animal has found a home 🏠',
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 12),
+                              ? 'This animal is looking for a home'
+                              : 'This animal has found a home',
+                          style:
+                              const TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ),
@@ -332,7 +318,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
 
                   const SizedBox(height: 16),
 
-                  // How to adopt card
+                  // Reference ID
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -353,14 +339,13 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       children: [
                         const Text(
                           'How to Adopt',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
+                          style:
+                              TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Send this Reference ID along with a screenshot of this profile to our admin team.',
-                          style: TextStyle(
-                              color: Colors.grey[600], fontSize: 13),
+                          style: TextStyle(color: Colors.grey[600], fontSize: 13),
                         ),
                         const SizedBox(height: 12),
                         const Text(
@@ -392,14 +377,12 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                           width: double.infinity,
                           child: ElevatedButton.icon(
                             onPressed: () => _copyId(post.postId ?? ''),
-                            icon: const Icon(Icons.copy,
-                                size: 16, color: Colors.white),
+                            icon: const Icon(Icons.copy, size: 16, color: Colors.white),
                             label: const Text('Copy Reference ID',
                                 style: TextStyle(color: Colors.white)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                             ),
@@ -414,14 +397,12 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                   // Metadata
                   Text(
                     'Posted: ${_formatDate(post.createdAt)}',
-                    style:
-                        TextStyle(color: Colors.grey[400], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[400], fontSize: 12),
                   ),
                   if (post.updatedAt != null)
                     Text(
                       'Updated: ${_formatDate(post.updatedAt!)}',
-                      style:
-                          TextStyle(color: Colors.grey[400], fontSize: 12),
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
                     ),
                 ],
               ),
@@ -432,15 +413,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
     );
   }
 
-  Widget _divider() => Container(
-        height: 30,
-        width: 1,
-        color: Colors.grey[300],
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-      );
-
-  String _formatDate(DateTime date) =>
-      '${date.day}/${date.month}/${date.year}';
+  String _formatDate(DateTime date) => '${date.day}/${date.month}/${date.year}';
 }
 
 class _InfoItem extends StatelessWidget {
@@ -451,20 +424,16 @@ class _InfoItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-          const SizedBox(height: 2),
-          Text(value,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, fontSize: 13),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+        const SizedBox(height: 2),
+        Text(value,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis),
+      ],
     );
   }
 }
