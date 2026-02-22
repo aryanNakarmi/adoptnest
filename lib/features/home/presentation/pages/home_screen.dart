@@ -1,4 +1,3 @@
-
 import 'package:adoptnest/features/adopt/presentation/pages/adopt_screen.dart';
 import 'package:adoptnest/features/chat/presentation/pages/chat_screen.dart';
 import 'package:adoptnest/features/dashboard/presentation/pages/dashboard_screen.dart';
@@ -15,28 +14,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
- 
-
 
   @override
   Widget build(BuildContext context) {
-      final List<Widget> lstBottomScreen = [
-        DashboardScreen(onAdoptTap: () {
-          setState(() {
-            _selectedIndex = 1;
-          });
-        }),
-        const AdoptScreen(),
-        const ReportAnimalScreen(),
-        const ChatScreen(),
-        const ProfileScreen(),
-      ];
+    final List<Widget> lstBottomScreen = [
+      DashboardScreen(onAdoptTap: () {
+        setState(() {
+          _selectedIndex = 1;
+        });
+      }),
+      const AdoptScreen(),
+      const ReportAnimalScreen(),
+      const SizedBox(), // placeholder for chat
+      const ProfileScreen(),
+    ];
 
     return Scaffold(
       body: lstBottomScreen[_selectedIndex],
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red, 
+        backgroundColor: Colors.red,
         child: const Icon(Icons.add_rounded, color: Colors.white),
         onPressed: () {
           setState(() {
@@ -46,17 +43,13 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: const CircleBorder(),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(20), 
+        padding: const EdgeInsets.all(20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             // Home
             IconButton(
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 0;
-                });
-              },
+              onPressed: () => setState(() => _selectedIndex = 0),
               icon: Icon(
                 Icons.pets_rounded,
                 color: _selectedIndex == 0 ? Colors.red : Colors.grey,
@@ -64,36 +57,29 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             // Adopt
             IconButton(
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
+              onPressed: () => setState(() => _selectedIndex = 1),
               icon: Icon(
                 Icons.healing_sharp,
                 color: _selectedIndex == 1 ? Colors.red : Colors.grey,
               ),
             ),
             const SizedBox(width: 60), // space for FAB
-            // Chat
+            // Chat (navigate fullscreen)
             IconButton(
               onPressed: () {
-                setState(() {
-                  _selectedIndex = 3;
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatScreen()),
+                );
               },
               icon: Icon(
                 Icons.chat_rounded,
-                color: _selectedIndex == 3 ? Colors.red : Colors.grey,
+                color: Colors.grey,
               ),
             ),
             // Profile
             IconButton(
-              onPressed: () {
-                setState(() {
-                  _selectedIndex = 4;
-                });
-              },
+              onPressed: () => setState(() => _selectedIndex = 4),
               icon: Icon(
                 Icons.person_rounded,
                 color: _selectedIndex == 4 ? Colors.red : Colors.grey,
@@ -105,4 +91,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

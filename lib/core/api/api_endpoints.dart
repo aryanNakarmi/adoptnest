@@ -78,5 +78,9 @@ static const String allAnimalPosts = '/animal-posts';
 static String animalPostById(String id) => '/animal-posts/$id';
 static const String myAdoptions = '/animal-posts/my-adoptions';
 
+// =================== Chat ===================
+static const String myChat = '/chats/my-chat';
+static const String sendUserMessage = '/chats/my-chat/messages';
+static String markChatAsRead(String chatId) => '/chats/$chatId/read';
 
 }

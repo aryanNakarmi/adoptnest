@@ -1,4 +1,5 @@
 import 'package:adoptnest/core/api/api_client.dart';
+import 'package:adoptnest/core/api/api_endpoints.dart';
 import 'package:adoptnest/features/chat/data/datasources/chat_datasource.dart';
 import 'package:adoptnest/features/chat/data/models/chat_api_model.dart';
 import 'package:adoptnest/features/chat/domain/entities/chat_entity.dart';
@@ -16,7 +17,8 @@ class ChatRemoteDatasource implements IChatRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> getMyChat() async {
-    final response = await _apiClient.get('/chats/my-chat');
+    final response = 
+    await _apiClient.get(ApiEndpoints.myChat);
     final data = response.data['data'];
 
     final chat = ChatApiModel.fromJson(
@@ -40,10 +42,10 @@ class ChatRemoteDatasource implements IChatRemoteDataSource {
 
   @override
   Future<MessageEntity> sendMessage(String content) async {
-    final response = await _apiClient.post(
-      '/chats/my-chat/messages',
-      data: {'content': content},
-    );
+    final response = await _apiClient.post(ApiEndpoints.sendUserMessage,
+    data: {'content': content},
+    ); 
+    
     return MessageApiModel.fromJson(
       Map<String, dynamic>.from(response.data['data']),
     ).toEntity();
@@ -51,7 +53,7 @@ class ChatRemoteDatasource implements IChatRemoteDataSource {
 
   @override
   Future<bool> markAsRead(String chatId) async {
-    await _apiClient.put('/chats/$chatId/read');
+    await _apiClient.put(ApiEndpoints.markChatAsRead(chatId));
     return true;
   }
 }

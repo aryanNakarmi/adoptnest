@@ -65,8 +65,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             curve: Curves.easeOut,
           );
         } else {
-          _scrollController.jumpTo(
-              _scrollController.position.maxScrollExtent);
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         }
       }
     });
@@ -129,17 +128,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFFF9FAFB),
-      appBar: _buildAppBar(chatState),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+      ),
       body: Column(
         children: [
+          // Chat header (replaces AppBar title since AppBar is transparent)
+          _buildHeader(chatState),
+
           // Offline banner
           if (chatState.isOffline)
             Container(
               width: double.infinity,
               color: Colors.orange.shade100,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Row(
                 children: [
                   Icon(Icons.wifi_off_rounded,
@@ -147,66 +163,73 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   const SizedBox(width: 6),
                   Text(
                     'You are offline — showing cached messages',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.orange.shade800),
+                    style:
+                        TextStyle(fontSize: 12, color: Colors.orange.shade800),
                   ),
                 ],
               ),
             ),
+
+          // Messages
           Expanded(child: _buildBody(chatState)),
+
+          // Input bar
           _buildInputBar(chatState),
         ],
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(ChatState chatState) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      surfaceTintColor: Colors.white,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-        onPressed: () => Navigator.of(context).pop(),
+  // Solid header that sits below the transparent AppBar
+  Widget _buildHeader(ChatState chatState) {
+    return Container(
+      
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + kToolbarHeight,
+        left: 16,
+        right: 16,
+        bottom: 12,
       ),
-      titleSpacing: 0,
-      title: Row(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: const BoxDecoration(
               color: Color(0xFFDC2626),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.support_agent,
-                color: Colors.white, size: 22),
+                color: Colors.white, size: 24),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'AdoptNest Support',
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
+              const SizedBox(height: 2),
               Row(
                 children: [
                   Container(
                     width: 7,
                     height: 7,
                     decoration: BoxDecoration(
-                      color: chatState.isOffline
-                          ? Colors.grey
-                          : Colors.green,
+                      color: chatState.isOffline ? Colors.grey : Colors.green,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 5),
                   Text(
                     chatState.isAdminTyping
                         ? 'Admin is typing...'
@@ -214,7 +237,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ? 'Offline'
                             : 'We reply within a few hours',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 12,
                       color: chatState.isAdminTyping
                           ? const Color(0xFFDC2626)
                           : Colors.grey.shade500,
@@ -228,10 +251,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ],
           ),
         ],
-      ),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: Colors.grey.shade200),
       ),
     );
   }
@@ -324,8 +343,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Text(
               chatState.errorMessage ?? 'Failed to load chat',
               textAlign: TextAlign.center,
-              style:
-                  TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -338,8 +356,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(24)),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -382,8 +400,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     hintText: isOffline
                         ? 'Cannot send messages while offline'
                         : 'Type your message...',
-                    hintStyle: TextStyle(
-                        color: Colors.grey.shade400, fontSize: 14),
+                    hintStyle:
+                        TextStyle(color: Colors.grey.shade400, fontSize: 14),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 10),
