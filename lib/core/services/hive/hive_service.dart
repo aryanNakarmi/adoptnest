@@ -5,6 +5,8 @@ import 'package:adoptnest/features/adopt/data/models/animal_post_hive_model.dart
 import 'package:adoptnest/features/auth/data/models/auth_hive_model.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_hive_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:adoptnest/features/chat/data/models/chat_hive_model.dart';
+import 'package:adoptnest/features/chat/data/models/message_hive_model.dart'
 import 'package:hive/hive.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +45,13 @@ class HiveService {
     if(!Hive.isAdapterRegistered(HiveTableConstant.animalPostTypeId)){
       Hive.registerAdapter(AnimalPostHiveModelAdapter());
     } 
+    if (!Hive.isAdapterRegistered(HiveTableConstant.chatTypeId)) {
+    Hive.registerAdapter(ChatHiveModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(HiveTableConstant.messageTypeId)) {
+    Hive.registerAdapter(MessageHiveModelAdapter());
+    }
+    
   }
 
   //Open all boxes
@@ -51,6 +60,9 @@ class HiveService {
     await Hive.openBox<AuthHiveModel>(HiveTableConstant.authTable);
     await Hive.openBox<AnimalReportHiveModel>(HiveTableConstant.animalReportTable);
     await Hive.openBox<AnimalPostHiveModel>(HiveTableConstant.animalPostTable);
+    await Hive.openBox<ChatHiveModel>(HiveTableConstant.chatTable);
+    await Hive.openBox<MessageHiveModel>(HiveTableConstant.messageTable);
+
 
   }
 
@@ -225,4 +237,47 @@ Future<void> cacheAnimalPost(AnimalPostHiveModel post) async {
 Future<void> clearAnimalPostCache() async {
   await _animalPostBox.clear();
 }
+
+
+// =================== Chat Queries ===================
+Box<ChatHiveModel> get _chatBox =>
+    Hive.box<ChatHiveModel>(HiveTableConstant.chatTable);
+
+Box<MessageHiveModel> get _messageBox =>
+    Hive.box<MessageHiveModel>(HiveTableConstant.messageTable);
+
+Future<void> cacheChat(ChatEntity chat) async {
+  final model = ChatHiveModel.fromEntity(chat);
+  await _chatBox.put('my_chat', model);
+}
+
+Future<ChatEntity?> getCachedChat() async {
+  final model = _chatBox.get('my_chat');
+  return model?.toEntity();
+}
+
+Future<void> cacheMessages(String chatId, List<MessageEntity> messages) async {
+  await _messageBox.clear();
+  for (final msg in messages) {
+    final model = MessageHiveModel.fromEntity(msg);
+    await _messageBox.put(msg.id, model);
+  }
+}
+
+Future<List<MessageEntity>> getCachedMessages(String chatId) async {
+  return _messageBox.values
+      .where((m) => m.chatId == chatId)
+      .map((m) => m.toEntity())
+      .toList()
+    ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+}
+
+Future<void> clearChatCache() async {
+  await _chatBox.clear();
+  await _messageBox.clear();
+}
+
+
+
+
 }
