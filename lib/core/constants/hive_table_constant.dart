@@ -12,5 +12,12 @@ class HiveTableConstant {
 
   static const int animalPostTypeId = 2;
   static const String animalPostTable = 'animal_post_table';
+  
+  static const int chatTypeId = 3;
+  static const String chatTable = 'chat_table';
+
+  static const int messageTypeId = 4;
+  static const String messageTable = 'message_table';
+
 
 }
