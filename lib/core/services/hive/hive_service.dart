@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:adoptnest/core/constants/hive_table_constant.dart';
 import 'package:adoptnest/features/adopt/data/models/animal_post_hive_model.dart';
 import 'package:adoptnest/features/auth/data/models/auth_hive_model.dart';
+import 'package:adoptnest/features/chat/domain/entities/chat_entity.dart';
 import 'package:adoptnest/features/report_animals/data/models/animal_report_hive_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adoptnest/features/chat/data/models/chat_hive_model.dart';
-import 'package:adoptnest/features/chat/data/models/message_hive_model.dart'
+import 'package:adoptnest/features/chat/data/models/message_hive_model.dart';
 import 'package:hive/hive.dart';
 
 import 'package:path_provider/path_provider.dart';
