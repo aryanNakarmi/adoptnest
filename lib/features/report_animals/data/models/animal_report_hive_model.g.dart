@@ -19,37 +19,43 @@ class AnimalReportHiveModelAdapter extends TypeAdapter<AnimalReportHiveModel> {
     return AnimalReportHiveModel(
       reportId: fields[0] as String?,
       species: fields[1] as String,
-      location: fields[2] as String,
-      description: fields[3] as String?,
-      imageUrl: fields[4] as String,
-      reportedBy: fields[5] as String,
-      status: fields[6] as String,
-      createdAt: fields[7] as DateTime,
-      updatedAt: fields[8] as DateTime?,
+      locationAddress: fields[2] as String,
+      locationLat: fields[3] as double,
+      locationLng: fields[4] as double,
+      description: fields[5] as String?,
+      imageUrl: fields[6] as String,
+      reportedBy: fields[7] as String,
+      status: fields[8] as String,
+      createdAt: fields[9] as DateTime,
+      updatedAt: fields[10] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AnimalReportHiveModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.reportId)
       ..writeByte(1)
       ..write(obj.species)
       ..writeByte(2)
-      ..write(obj.location)
+      ..write(obj.locationAddress)
       ..writeByte(3)
-      ..write(obj.description)
+      ..write(obj.locationLat)
       ..writeByte(4)
-      ..write(obj.imageUrl)
+      ..write(obj.locationLng)
       ..writeByte(5)
-      ..write(obj.reportedBy)
+      ..write(obj.description)
       ..writeByte(6)
-      ..write(obj.status)
+      ..write(obj.imageUrl)
       ..writeByte(7)
-      ..write(obj.createdAt)
+      ..write(obj.reportedBy)
       ..writeByte(8)
+      ..write(obj.status)
+      ..writeByte(9)
+      ..write(obj.createdAt)
+      ..writeByte(10)
       ..write(obj.updatedAt);
   }
 

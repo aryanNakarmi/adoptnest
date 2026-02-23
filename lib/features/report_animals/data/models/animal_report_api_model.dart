@@ -1,22 +1,14 @@
 import 'package:adoptnest/features/report_animals/domain/entities/animal_report_entity.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-part 'animal_report_api_model.g.dart';
+import 'package:adoptnest/features/report_animals/domain/entities/location_value.dart';
 
-@JsonSerializable()
 class AnimalReportApiModel {
-  @JsonKey(name: '_id')
   final String? id;
-
   final String species;
-  final String location;
+  final LocationValue location;
   final String? description;
   final String imageUrl;
   final String status;
-
-  /// reportedBy can be String OR populated object
-  @JsonKey(fromJson: _reportedByFromJson)
-  final String reportedBy;  
-
+  final String reportedBy;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -32,50 +24,62 @@ class AnimalReportApiModel {
     this.updatedAt,
   });
 
-  Map<String, dynamic> toJson() => _$AnimalReportApiModelToJson(this);
-
-  factory AnimalReportApiModel.fromJson(Map<String, dynamic> json) =>
-      _$AnimalReportApiModelFromJson(json);
-
-  AnimalReportEntity toEntity() {
-    return AnimalReportEntity(
-      reportId: id,
-      species: species,
-      location: location,
-      description: description,
-      imageUrl: imageUrl,
-      reportedBy: reportedBy,
-      status: _stringToStatus(status),
-      createdAt: createdAt ?? DateTime.now(),
-      updatedAt: updatedAt,
-    );
-  }
-
-  factory AnimalReportApiModel.fromEntity(AnimalReportEntity entity) {
+  factory AnimalReportApiModel.fromJson(Map<String, dynamic> json) {
     return AnimalReportApiModel(
-      id: entity.reportId,
-      species: entity.species,
-      location: entity.location,
-      description: entity.description,
-      imageUrl: entity.imageUrl,
-      reportedBy: entity.reportedBy,
-      status: entity.status.name,
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
+      id: json['_id'] as String?,
+      species: json['species'] as String,
+      location: LocationValue.fromJson(json['location'] as Map<String, dynamic>),
+      description: json['description'] as String?,
+      imageUrl: json['imageUrl'] as String,
+      status: json['status'] as String? ?? 'pending',
+      reportedBy: _reportedByFromJson(json['reportedBy']),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'] as String)
+          : null,
     );
   }
 
-  static List<AnimalReportEntity> toEntityList(
-    List<AnimalReportApiModel> models,
-  ) {
-    return models.map((model) => model.toEntity()).toList();
-  }
+  Map<String, dynamic> toJson() => {
+        if (id != null) '_id': id,
+        'species': species,
+        'location': location.toJson(),
+        if (description != null) 'description': description,
+        'imageUrl': imageUrl,
+        'status': status,
+        'reportedBy': reportedBy,
+      };
+
+  AnimalReportEntity toEntity() => AnimalReportEntity(
+        reportId: id,
+        species: species,
+        location: location,
+        description: description,
+        imageUrl: imageUrl,
+        reportedBy: reportedBy,
+        status: _stringToStatus(status),
+        createdAt: createdAt ?? DateTime.now(),
+        updatedAt: updatedAt,
+      );
+
+  factory AnimalReportApiModel.fromEntity(AnimalReportEntity entity) =>
+      AnimalReportApiModel(
+        id: entity.reportId,
+        species: entity.species,
+        location: entity.location,
+        description: entity.description,
+        imageUrl: entity.imageUrl,
+        reportedBy: entity.reportedBy,
+        status: entity.status.name,
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+      );
 
   static String _reportedByFromJson(dynamic value) {
     if (value is String) return value;
-    if (value is Map && value.containsKey('_id')) {
-      return value['_id'];
-    }
+    if (value is Map && value.containsKey('_id')) return value['_id'] as String;
     return '';
   }
 

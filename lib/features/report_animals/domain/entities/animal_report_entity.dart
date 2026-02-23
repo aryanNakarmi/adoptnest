@@ -1,4 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'location_value.dart';
+
+export 'location_value.dart';
 
 enum AnimalReportStatus {
   pending,
@@ -6,17 +9,16 @@ enum AnimalReportStatus {
   rejected,
 }
 
-
 class AnimalReportEntity extends Equatable {
   final String? reportId;
   final String species;
-  final String location;
-  final String? description; 
+  final LocationValue location;
+  final String? description;
   final String imageUrl;
   final String reportedBy;
-  final AnimalReportStatus status; 
+  final AnimalReportStatus status;
   final DateTime createdAt;
-  final DateTime? updatedAt; 
+  final DateTime? updatedAt;
 
   const AnimalReportEntity({
     this.reportId,
@@ -32,14 +34,14 @@ class AnimalReportEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-    reportId,
-    species,
-    location,
-    description,
-    imageUrl,
-    reportedBy,
-    status,
-    createdAt,
-    updatedAt,
-  ];
+        reportId,
+        species,
+        location,
+        description,
+        imageUrl,
+        reportedBy,
+        status,
+        createdAt,
+        updatedAt,
+      ];
 }

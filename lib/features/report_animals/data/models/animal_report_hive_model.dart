@@ -2,12 +2,12 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'package:adoptnest/core/constants/hive_table_constant.dart';
 import 'package:adoptnest/features/report_animals/domain/entities/animal_report_entity.dart';
+import 'package:adoptnest/features/report_animals/domain/entities/location_value.dart';
 
 part 'animal_report_hive_model.g.dart';
 
 @HiveType(typeId: HiveTableConstant.animalReportTypeId)
 class AnimalReportHiveModel extends HiveObject {
-  
   @HiveField(0)
   final String reportId;
 
@@ -15,30 +15,38 @@ class AnimalReportHiveModel extends HiveObject {
   final String species;
 
   @HiveField(2)
-  final String location;
+  final String locationAddress;
 
   @HiveField(3)
-  final String? description;
+  final double locationLat;
 
   @HiveField(4)
-  final String imageUrl;
+  final double locationLng;
 
   @HiveField(5)
-  final String reportedBy;
+  final String? description;
 
   @HiveField(6)
-  final String status; 
+  final String imageUrl;
 
   @HiveField(7)
-  final DateTime createdAt;
+  final String reportedBy;
 
   @HiveField(8)
+  final String status;
+
+  @HiveField(9)
+  final DateTime createdAt;
+
+  @HiveField(10)
   final DateTime? updatedAt;
 
   AnimalReportHiveModel({
     String? reportId,
     required this.species,
-    required this.location,
+    required this.locationAddress,
+    required this.locationLat,
+    required this.locationLng,
     this.description,
     required this.imageUrl,
     required this.reportedBy,
@@ -47,39 +55,39 @@ class AnimalReportHiveModel extends HiveObject {
     this.updatedAt,
   }) : reportId = reportId ?? const Uuid().v4();
 
- 
-  AnimalReportEntity toEntity() {
-    return AnimalReportEntity(
-      reportId: reportId,
-      species: species,
-      location: location,
-      description: description,
-      imageUrl: imageUrl,
-      reportedBy: reportedBy,
-      status: _stringToStatus(status), // Convert String to Enum
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-    );
-  }
+  AnimalReportEntity toEntity() => AnimalReportEntity(
+        reportId: reportId,
+        species: species,
+        location: LocationValue(
+          address: locationAddress,
+          lat: locationLat,
+          lng: locationLng,
+        ),
+        description: description,
+        imageUrl: imageUrl,
+        reportedBy: reportedBy,
+        status: _stringToStatus(status),
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      );
 
-  factory AnimalReportHiveModel.fromEntity(AnimalReportEntity entity) {
-    return AnimalReportHiveModel(
-      reportId: entity.reportId,
-      species: entity.species,
-      location: entity.location,
-      description: entity.description,
-      imageUrl: entity.imageUrl,
-      reportedBy: entity.reportedBy,
-      status: entity.status.name, 
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-    );
-  }
+  factory AnimalReportHiveModel.fromEntity(AnimalReportEntity entity) =>
+      AnimalReportHiveModel(
+        reportId: entity.reportId,
+        species: entity.species,
+        locationAddress: entity.location.address,
+        locationLat: entity.location.lat,
+        locationLng: entity.location.lng,
+        description: entity.description,
+        imageUrl: entity.imageUrl,
+        reportedBy: entity.reportedBy,
+        status: entity.status.name,
+        createdAt: entity.createdAt,
+        updatedAt: entity.updatedAt,
+      );
 
-  static AnimalReportStatus _stringToStatus(String statusString) {
-    switch (statusString) {
-      case 'pending':
-        return AnimalReportStatus.pending;
+  static AnimalReportStatus _stringToStatus(String s) {
+    switch (s) {
       case 'approved':
         return AnimalReportStatus.approved;
       case 'rejected':
@@ -89,16 +97,6 @@ class AnimalReportHiveModel extends HiveObject {
     }
   }
 
-
-  static List<AnimalReportEntity> toEntityList(
-    List<AnimalReportHiveModel> models,
-  ) {
-    return models.map((model) => model.toEntity()).toList();
-  }
-
-  static List<AnimalReportHiveModel> fromEntityList(
-    List<AnimalReportEntity> entities,
-  ) {
-    return entities.map((entity) => AnimalReportHiveModel.fromEntity(entity)).toList();
-  }
+  static List<AnimalReportEntity> toEntityList(List<AnimalReportHiveModel> models) =>
+      models.map((m) => m.toEntity()).toList();
 }
