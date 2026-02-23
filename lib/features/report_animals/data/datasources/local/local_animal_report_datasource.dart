@@ -6,19 +6,16 @@ import 'package:adoptnest/features/report_animals/data/models/animal_report_hive
 
 final animalReportLocalDatasourceProvider =
     Provider<AnimalReportLocalDatasource>((ref) {
-  final hiveService = ref.read(hiveServiceProvider);
-  return AnimalReportLocalDatasource(hiveService: hiveService);
+  return AnimalReportLocalDatasource(hiveService: ref.read(hiveServiceProvider));
 });
 
 class AnimalReportLocalDatasource implements IAnimalReportLocalDataSource {
   final HiveService _hiveService;
-
   AnimalReportLocalDatasource({required HiveService hiveService})
       : _hiveService = hiveService;
 
   @override
-  Future<AnimalReportHiveModel> createAnimalReport(
-      AnimalReportHiveModel report) async {
+  Future<AnimalReportHiveModel> createAnimalReport(AnimalReportHiveModel report) async {
     try {
       return await _hiveService.createAnimalReport(report);
     } catch (e) {
@@ -64,8 +61,7 @@ class AnimalReportLocalDatasource implements IAnimalReportLocalDataSource {
   }
 
   @override
-  Future<List<AnimalReportHiveModel>> getReportsBySpecies(
-      String species) async {
+  Future<List<AnimalReportHiveModel>> getReportsBySpecies(String species) async {
     try {
       return _hiveService.getReportsBySpecies(species);
     } catch (e) {
@@ -74,13 +70,9 @@ class AnimalReportLocalDatasource implements IAnimalReportLocalDataSource {
   }
 
   @override
-  Future<AnimalReportHiveModel?> updateReportStatus(
-      String reportId, String newStatus) async {
+  Future<AnimalReportHiveModel?> updateReportStatus(String reportId, String newStatus) async {
     try {
-      final success = await _hiveService.updateAnimalReportStatus(
-        reportId,
-        newStatus,
-      );
+      final success = await _hiveService.updateAnimalReportStatus(reportId, newStatus);
       if (!success) return null;
       return _hiveService.getAnimalReportById(reportId);
     } catch (e) {

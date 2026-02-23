@@ -178,7 +178,9 @@ Future<bool> updateAnimalReportStatus(String id, String status) async {
     final updated = AnimalReportHiveModel(
       reportId: report.reportId,
       species: report.species,
-      location: report.location,
+      locationAddress: report.locationAddress,  
+      locationLat: report.locationLat,         
+      locationLng: report.locationLng,          
       description: report.description,
       imageUrl: report.imageUrl,
       reportedBy: report.reportedBy,

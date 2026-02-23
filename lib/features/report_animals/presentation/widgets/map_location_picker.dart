@@ -1,18 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-
 import 'package:adoptnest/features/report_animals/domain/entities/location_value.dart';
 
-// Default center: Kathmandu (matches your web implementation)
+// Default center: Kathmandu
 const _kDefaultCenter = LatLng(27.7172, 85.3240);
 
-/// Reverse geocode using OpenStreetMap Nominatim (free, no API key)
 Future<String> _reverseGeocode(double lat, double lng) async {
   try {
     final dio = Dio();
@@ -25,24 +21,19 @@ Future<String> _reverseGeocode(double lat, double lng) async {
         'zoom': 18,
         'addressdetails': 1,
       },
-      options: Options(
-        headers: {
-          'Accept-Language': 'en',
-          'User-Agent': 'AdoptNest/1.0',
-        },
-      ),
+      options: Options(headers: {
+        'Accept-Language': 'en',
+        'User-Agent': 'AdoptNest/1.0',
+      }),
     );
-
     final data = response.data as Map<String, dynamic>;
     if (data['error'] != null) return '${lat.toStringAsFixed(6)}, ${lng.toStringAsFixed(6)}';
-
     final a = data['address'] as Map<String, dynamic>? ?? {};
     final parts = <String>[
       a['road'] ?? a['pedestrian'] ?? a['footway'] ?? a['path'] ?? '',
       a['suburb'] ?? a['neighbourhood'] ?? a['quarter'] ?? '',
       a['city'] ?? a['town'] ?? a['village'] ?? a['municipality'] ?? '',
     ].where((s) => s.isNotEmpty).toList();
-
     return parts.isNotEmpty ? parts.join(', ') : (data['display_name'] as String? ?? '$lat, $lng');
   } catch (_) {
     return '${lat.toStringAsFixed(6)}, ${lng.toStringAsFixed(6)}';
@@ -78,14 +69,11 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
   void initState() {
     super.initState();
     _mapController = MapController();
-
     if (widget.value != null) {
       _center = LatLng(widget.value!.lat, widget.value!.lng);
       _address = widget.value!.address;
       _firstMove = true;
     }
-
-    // Initial geocode after map is ready
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateLocation(_center.latitude, _center.longitude);
     });
@@ -100,9 +88,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   void _debouncedUpdate(double lat, double lng) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 600), () {
-      _updateLocation(lat, lng);
-    });
+    _debounce = Timer(const Duration(milliseconds: 600), () => _updateLocation(lat, lng));
   }
 
   Future<void> _updateLocation(double lat, double lng) async {
@@ -118,9 +104,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
   Future<void> _getGPSLocation() async {
     setState(() => _gettingGPS = true);
-
     try {
-      // Check permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -130,15 +114,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        _showError('Location permission permanently denied. Enable it in settings.');
+        _showError('Enable location permission in settings');
         return;
       }
-
       final pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
-
       final latLng = LatLng(pos.latitude, pos.longitude);
       _mapController.move(latLng, 18);
       setState(() {
@@ -171,11 +153,11 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ── Map ──────────────────────────────────────────────
           SizedBox(
             height: 260,
             child: Stack(
               children: [
+                // ── Map ──
                 FlutterMap(
                   mapController: _mapController,
                   options: MapOptions(
@@ -197,18 +179,17 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       userAgentPackageName: 'com.adoptnest.app',
                     ),
                   ],
                 ),
 
-                // ── Fixed center pin (mirrors web) ──
+                // ── Fixed center pin ──
                 IgnorePointer(
                   child: Center(
                     child: Transform.translate(
-                      offset: const Offset(0, -28), // shift pin up so tip = center
+                      offset: const Offset(0, -28),
                       child: AnimatedScale(
                         scale: _dragging ? 1.15 : 1.0,
                         duration: const Duration(milliseconds: 150),
@@ -223,25 +204,14 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: Colors.white, width: 3),
                                 boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 3),
-                                  )
+                                  BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3))
                                 ],
                               ),
                               child: const Center(
-                                child: CircleAvatar(
-                                  radius: 4,
-                                  backgroundColor: Colors.white,
-                                ),
+                                child: CircleAvatar(radius: 4, backgroundColor: Colors.white),
                               ),
                             ),
-                            Container(
-                              width: 2,
-                              height: 16,
-                              color: Colors.red,
-                            ),
+                            Container(width: 2, height: 16, color: Colors.red),
                             Container(
                               width: 6,
                               height: 6,
@@ -268,8 +238,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       borderRadius: BorderRadius.circular(8),
                       onTap: _gettingGPS ? null : _getGPSLocation,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 7),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -288,8 +257,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                                 ),
                               )
                             else
-                              const Icon(Icons.my_location,
-                                  size: 14, color: Colors.red),
+                              const Icon(Icons.my_location, size: 14, color: Colors.red),
                             const SizedBox(width: 5),
                             Text(
                               _gettingGPS ? 'Locating...' : 'My Location',
@@ -314,45 +282,36 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     right: 0,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.95),
                           borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black12, blurRadius: 4)
-                          ],
+                          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (_dragging) ...[
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text('Drag to position...',
-                                  style: TextStyle(fontSize: 12)),
-                            ] else ...[
-                              const SizedBox(
-                                width: 12,
-                                height: 12,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation(Colors.red),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text('Finding address...',
-                                  style: TextStyle(fontSize: 12)),
-                            ],
-                          ],
+                          children: _dragging
+                              ? [
+                                  Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('Drag to position...', style: TextStyle(fontSize: 12)),
+                                ]
+                              : [
+                                  const SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation(Colors.red),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text('Finding address...', style: TextStyle(fontSize: 12)),
+                                ],
                         ),
                       ),
                     ),
@@ -366,8 +325,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     right: 0,
                     child: Center(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.65),
                           borderRadius: BorderRadius.circular(20),
@@ -383,7 +341,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             ),
           ),
 
-          // ── Address bar ──────────────────────────────────────
+          // ── Address bar ──
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             color: Colors.white,
@@ -392,12 +350,8 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                 Container(
                   width: 32,
                   height: 32,
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child:
-                      const Icon(Icons.location_on, color: Colors.red, size: 18),
+                  decoration: BoxDecoration(color: Colors.red.shade50, shape: BoxShape.circle),
+                  child: const Icon(Icons.location_on, color: Colors.red, size: 18),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -423,9 +377,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                                     ? _address
                                     : 'Move the map to select a location',
                         style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -436,11 +391,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             ),
           ),
 
-          // ── Hint footer ──
+          // ── Footer hint ──
           Container(
             width: double.infinity,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             color: Colors.grey.shade50,
             child: const Text(
               'Drag the map to place the pin exactly where you saw the animal',
