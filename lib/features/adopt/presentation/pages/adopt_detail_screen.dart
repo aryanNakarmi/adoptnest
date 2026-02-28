@@ -1,9 +1,9 @@
 import 'package:adoptnest/core/api/api_endpoints.dart';
+import 'package:adoptnest/core/services/storage/user_session_service.dart';
 import 'package:adoptnest/features/adopt/domain/entities/animal_post_entity.dart';
 import 'package:adoptnest/features/adopt/presentation/state/animal_post_state.dart';
 import 'package:adoptnest/features/adopt/presentation/view_model/animal_post_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdoptDetailScreen extends ConsumerStatefulWidget {
@@ -22,11 +22,22 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => ref
+    Future.microtask(() async {
+      await ref
           .read(animalPostViewModelProvider.notifier)
-          .getPostById(widget.postId),
-    );
+          .getPostById(widget.postId);
+      _syncHasRequested();
+    });
+  }
+
+  /// Check if the current user already sent a request by looking at adoptionRequests
+  void _syncHasRequested() {
+    final userId = ref.read(userSessionServiceProvider).getCurrentUserId();
+    final post = ref.read(animalPostViewModelProvider).selectedPost;
+    if (userId == null || post == null) return;
+
+    final already = post.adoptionRequests.any((r) => r.userId == userId);
+    ref.read(animalPostViewModelProvider.notifier).setHasRequested(already);
   }
 
   @override
@@ -41,13 +52,71 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
     return '$base${path.startsWith('/') ? '' : '/'}$path';
   }
 
-  void _copyId(String id) {
-    Clipboard.setData(ClipboardData(text: id));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Reference ID copied to clipboard'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
+  Future<void> _handleRequestAdoption() async {
+    final vm = ref.read(animalPostViewModelProvider.notifier);
+    final success = await vm.requestAdoption(widget.postId);
+    if (!mounted) return;
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adoption request sent! The admin will be in touch.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      final error = ref.read(animalPostViewModelProvider).errorMessage;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Failed to send request'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleCancelRequest() async {
+    final vm = ref.read(animalPostViewModelProvider.notifier);
+    final success = await vm.cancelAdoptionRequest(widget.postId);
+    if (!mounted) return;
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Adoption request cancelled.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } else {
+      final error = ref.read(animalPostViewModelProvider).errorMessage;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error ?? 'Failed to cancel request'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showCancelConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Cancel Request'),
+        content: const Text(
+            'Are you sure you want to cancel your adoption request?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _handleCancelRequest();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Yes, Cancel'),
+          ),
+        ],
       ),
     );
   }
@@ -57,7 +126,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
     final state = ref.watch(animalPostViewModelProvider);
     final post = state.selectedPost;
 
-    if (state.status == AnimalPostViewStatus.loading || post == null) {
+    if (state.status == AnimalPostViewStatus.loading && post == null) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(color: Colors.red, strokeWidth: 2.5),
@@ -65,7 +134,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
       );
     }
 
-    if (state.status == AnimalPostViewStatus.error) {
+    if (state.status == AnimalPostViewStatus.error && post == null) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -81,8 +150,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                     .read(animalPostViewModelProvider.notifier)
                     .getPostById(widget.postId),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child:
-                    const Text('Retry', style: TextStyle(color: Colors.white)),
+                child: const Text('Retry', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -90,7 +158,15 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
       );
     }
 
+    if (post == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
+      );
+    }
+
     final isAvailable = post.status == AnimalPostStatus.available;
+    final hasRequested = state.hasRequested;
+    final isRequestLoading = state.isRequestLoading;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -111,7 +187,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Photo carousel
+            // ── Photo carousel ──
             Stack(
               children: [
                 SizedBox(
@@ -135,19 +211,20 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                             errorBuilder: (_, __, ___) => Container(
                               color: Colors.grey[200],
                               child: const Center(
-                                child: Icon(Icons.pets, size: 60, color: Colors.grey),
+                                child:
+                                    Icon(Icons.pets, size: 60, color: Colors.grey),
                               ),
                             ),
                           ),
                         ),
                 ),
-
-                // Status badge on photo
+                // Status badge
                 Positioned(
                   bottom: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: isAvailable ? Colors.green : Colors.blue,
                       borderRadius: BorderRadius.circular(20),
@@ -161,44 +238,43 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                     ),
                   ),
                 ),
-
                 // Photo counter
                 if (post.photos.length > 1)
                   Positioned(
                     bottom: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         '${_currentPhotoIndex + 1}/${post.photos.length}',
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 12),
                       ),
                     ),
                   ),
               ],
             ),
 
-            // Thumbnail strip
+            // ── Thumbnail strip ──
             if (post.photos.length > 1)
               Container(
                 height: 68,
                 color: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 8),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: post.photos.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (_, i) => GestureDetector(
-                    onTap: () {
-                      _pageController.animateToPage(i,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut);
-                    },
+                    onTap: () => _pageController.animateToPage(i,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut),
                     child: Container(
                       width: 52,
                       decoration: BoxDecoration(
@@ -224,7 +300,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                 ),
               ),
 
-            // Content
+            // ── Content ──
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -237,11 +313,12 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text('${post.species} • ${post.gender}',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 15)),
+                      style:
+                          TextStyle(color: Colors.grey[600], fontSize: 15)),
 
                   const SizedBox(height: 20),
 
-                  // Info grid without Expanded inside Row
+                  // Info grid
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -254,9 +331,11 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       children: [
                         _InfoItem(label: 'Species', value: post.species),
                         _InfoItem(label: 'Gender', value: post.gender),
-                        _InfoItem(label: 'Age', value: '${post.age} months'),
+                        _InfoItem(
+                            label: 'Age', value: '${post.age} months'),
                         Flexible(
-                          child: _InfoItem(label: 'Location', value: post.location),
+                          child: _InfoItem(
+                              label: 'Location', value: post.location),
                         ),
                       ],
                     ),
@@ -264,7 +343,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
 
                   const SizedBox(height: 20),
 
-                  if (post.description != null && post.description!.isNotEmpty) ...[
+                  if (post.description != null &&
+                      post.description!.isNotEmpty) ...[
                     const Text(
                       'Description',
                       style: TextStyle(
@@ -284,7 +364,7 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                   const Divider(),
                   const SizedBox(height: 20),
 
-                  // Status card
+                  // ── Status card ──
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -296,7 +376,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Current Status',
-                            style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 12)),
                         const SizedBox(height: 4),
                         Text(
                           isAvailable ? 'Available' : 'Adopted',
@@ -309,8 +390,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                           isAvailable
                               ? 'This animal is looking for a home'
                               : 'This animal has found a home',
-                          style:
-                              const TextStyle(color: Colors.white70, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ),
@@ -318,79 +399,38 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Reference ID
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[200]!),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'How to Adopt',
-                          style:
-                              TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Send this Reference ID along with a screenshot of this profile to our admin team.',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'REFERENCE ID',
-                          style: TextStyle(
-                              fontSize: 11,
-                              letterSpacing: 1,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Text(
-                            post.postId ?? '',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'monospace'),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => _copyId(post.postId ?? ''),
-                            icon: const Icon(Icons.copy, size: 16, color: Colors.white),
-                            label: const Text('Copy Reference ID',
-                                style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                  // ── Adoption Request Button ──
+                  if (isAvailable) _buildAdoptionRequestSection(
+                    hasRequested: hasRequested,
+                    isLoading: isRequestLoading,
+                    requestCount: post.adoptionRequests.length,
+                  ),
+
+                  if (!isAvailable) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.favorite,
+                              color: Colors.blue[400], size: 20),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              'This animal has already been adopted and found a loving home.',
+                              style: TextStyle(
+                                  color: Colors.blueAccent, fontSize: 14),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
 
                   const SizedBox(height: 16),
 
@@ -402,7 +442,8 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
                   if (post.updatedAt != null)
                     Text(
                       'Updated: ${_formatDate(post.updatedAt!)}',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                      style:
+                          TextStyle(color: Colors.grey[400], fontSize: 12),
                     ),
                 ],
               ),
@@ -413,7 +454,158 @@ class _AdoptDetailScreenState extends ConsumerState<AdoptDetailScreen> {
     );
   }
 
-  String _formatDate(DateTime date) => '${date.day}/${date.month}/${date.year}';
+  Widget _buildAdoptionRequestSection({
+    required bool hasRequested,
+    required bool isLoading,
+    required int requestCount,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Adopt This Animal',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              if (requestCount > 0) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[100],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '$requestCount interested',
+                    style: TextStyle(
+                        color: Colors.orange[800],
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            hasRequested
+                ? 'Your adoption request has been submitted. The admin will review and contact you soon.'
+                : 'Send an adoption request and our team will get in touch with you about next steps.',
+            style: TextStyle(
+                color: Colors.grey[600], fontSize: 13, height: 1.5),
+          ),
+          const SizedBox(height: 16),
+          if (hasRequested) ...[
+            // ── Already requested — show status + cancel ──
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle,
+                      color: Colors.green[600], size: 18),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Request Sent',
+                      style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed:
+                    isLoading ? null : _showCancelConfirmDialog,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: Colors.red),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.red),
+                      )
+                    : const Text(
+                        'Cancel Request',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15),
+                      ),
+              ),
+            ),
+          ] else ...[
+            // ── Not yet requested — show request button ──
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: isLoading ? null : _handleRequestAdoption,
+                icon: isLoading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.pets,
+                        size: 18, color: Colors.white),
+                label: Text(
+                  isLoading ? 'Sending...' : 'Request Adoption',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  disabledBackgroundColor: Colors.grey[300],
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.day}/${date.month}/${date.year}';
 }
 
 class _InfoItem extends StatelessWidget {
@@ -427,10 +619,12 @@ class _InfoItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[500], fontSize: 11)),
+        Text(label,
+            style: TextStyle(color: Colors.grey[500], fontSize: 11)),
         const SizedBox(height: 2),
         Text(value,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            style: const TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 13),
             maxLines: 1,
             overflow: TextOverflow.ellipsis),
       ],

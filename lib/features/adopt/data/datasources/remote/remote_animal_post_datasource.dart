@@ -37,8 +37,7 @@ class AnimalPostRemoteDatasource implements IAnimalPostRemoteDataSource {
   @override
   Future<AnimalPostApiModel?> getAnimalPostById(String postId) async {
     try {
-      final response =
-          await _apiClient.get(ApiEndpoints.animalPostById(postId));
+      final response = await _apiClient.get(ApiEndpoints.animalPostById(postId));
       if (response.data['success'] == true) {
         return AnimalPostApiModel.fromJson(response.data['data']);
       }
@@ -59,6 +58,24 @@ class AnimalPostRemoteDatasource implements IAnimalPostRemoteDataSource {
             .toList();
       }
       return [];
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> requestAdoption(String postId) async {
+    try {
+      await _apiClient.post(ApiEndpoints.requestAdoption(postId));
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> cancelAdoptionRequest(String postId) async {
+    try {
+      await _apiClient.delete(ApiEndpoints.cancelAdoptionRequest(postId));
     } on DioException {
       rethrow;
     }

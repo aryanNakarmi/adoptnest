@@ -267,7 +267,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             child: _buildReportCard(
                               species: report.species ?? "Unknown",
-                              location: report.location ?? "Unknown",
+                               location: report.location.address ?? 
+      "                       ${report.location.lat}, ${report.location.lng}",
                               status: report.status?.name ?? "Pending",
                               imageUrl: report.imageUrl ?? "",
                               description: report.description ?? "",
@@ -361,30 +362,50 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    species,
-                    style: FontData.body2.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    location,
-                    style: FontData.body2.copyWith(color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 6),
-                  if (description.isNotEmpty)
-                    Text(
-                      description,
-                      style: FontData.body2.copyWith(color: Colors.grey[500]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
-            ),
+  padding: const EdgeInsets.all(10),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        species,
+        style: FontData.body2.copyWith(fontWeight: FontWeight.w600),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      const SizedBox(height: 2),
+      Row(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Icon(
+      Icons.location_on,
+      size: 14,
+      color: Colors.grey,
+    ),
+    const SizedBox(width: 4),
+    Expanded(
+      child: Text(
+        location,
+        style: FontData.body2.copyWith(
+          color: Colors.grey[600],
+          fontSize: 11,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+  ],
+),
+      const SizedBox(height: 2),
+      if (description.isNotEmpty)
+        Text(
+          description,
+          style: FontData.body2.copyWith(color: Colors.grey[500], fontSize: 11),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+    ],
+  ),
+),
           ],
         ),
       ),

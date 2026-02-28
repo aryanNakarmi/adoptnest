@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+
   await HiveService().init();
 
    final sharedPrefs = await SharedPreferences.getInstance();

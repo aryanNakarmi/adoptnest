@@ -6,6 +6,8 @@ enum AnimalPostViewStatus {
   loading,
   loaded,
   error,
+  requestSent,
+  requestCancelled,
 }
 
 class AnimalPostState extends Equatable {
@@ -14,6 +16,8 @@ class AnimalPostState extends Equatable {
   final List<AnimalPostEntity> myAdoptions;
   final AnimalPostEntity? selectedPost;
   final String? errorMessage;
+  final bool hasRequested;
+  final bool isRequestLoading;
 
   // Local filter state
   final String searchQuery;
@@ -27,6 +31,8 @@ class AnimalPostState extends Equatable {
     this.myAdoptions = const [],
     this.selectedPost,
     this.errorMessage,
+    this.hasRequested = false,
+    this.isRequestLoading = false,
     this.searchQuery = '',
     this.speciesFilter = 'All',
     this.genderFilter = 'All',
@@ -38,8 +44,7 @@ class AnimalPostState extends Equatable {
 
     if (speciesFilter != 'All') {
       result = result
-          .where((p) =>
-              p.species.toLowerCase() == speciesFilter.toLowerCase())
+          .where((p) => p.species.toLowerCase() == speciesFilter.toLowerCase())
           .toList();
     }
     if (genderFilter != 'All') {
@@ -84,6 +89,8 @@ class AnimalPostState extends Equatable {
     bool resetSelectedPost = false,
     String? errorMessage,
     bool resetErrorMessage = false,
+    bool? hasRequested,
+    bool? isRequestLoading,
     String? searchQuery,
     String? speciesFilter,
     String? genderFilter,
@@ -97,6 +104,8 @@ class AnimalPostState extends Equatable {
           resetSelectedPost ? null : (selectedPost ?? this.selectedPost),
       errorMessage:
           resetErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      hasRequested: hasRequested ?? this.hasRequested,
+      isRequestLoading: isRequestLoading ?? this.isRequestLoading,
       searchQuery: searchQuery ?? this.searchQuery,
       speciesFilter: speciesFilter ?? this.speciesFilter,
       genderFilter: genderFilter ?? this.genderFilter,
@@ -111,6 +120,8 @@ class AnimalPostState extends Equatable {
         myAdoptions,
         selectedPost,
         errorMessage,
+        hasRequested,
+        isRequestLoading,
         searchQuery,
         speciesFilter,
         genderFilter,

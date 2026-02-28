@@ -1,6 +1,8 @@
+import 'package:adoptnest/features/adopt/domain/usecases/cancel_adoption_request_usecase.dart';
 import 'package:adoptnest/features/adopt/domain/usecases/get_all_animal_posts_usecase.dart';
 import 'package:adoptnest/features/adopt/domain/usecases/get_animal_post_by_id_usecase.dart';
 import 'package:adoptnest/features/adopt/domain/usecases/get_my_adoptions_usecase.dart';
+import 'package:adoptnest/features/adopt/domain/usecases/request_adoption_usecase.dart';
 import 'package:adoptnest/features/adopt/presentation/state/animal_post_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,12 +15,17 @@ class AnimalPostViewModel extends Notifier<AnimalPostState> {
   late final GetAllAnimalPostsUsecase _getAllPostsUsecase;
   late final GetAnimalPostByIdUsecase _getPostByIdUsecase;
   late final GetMyAdoptionsUsecase _getMyAdoptionsUsecase;
+  late final RequestAdoptionUsecase _requestAdoptionUsecase;
+  late final CancelAdoptionRequestUsecase _cancelAdoptionRequestUsecase;
 
   @override
   AnimalPostState build() {
     _getAllPostsUsecase = ref.read(getAllAnimalPostsUsecaseProvider);
     _getPostByIdUsecase = ref.read(getAnimalPostByIdUsecaseProvider);
     _getMyAdoptionsUsecase = ref.read(getMyAdoptionsUsecaseProvider);
+    _requestAdoptionUsecase = ref.read(requestAdoptionUsecaseProvider);
+    _cancelAdoptionRequestUsecase =
+        ref.read(cancelAdoptionRequestUsecaseProvider);
     return const AnimalPostState();
   }
 
@@ -47,10 +54,15 @@ class AnimalPostViewModel extends Notifier<AnimalPostState> {
         status: AnimalPostViewStatus.error,
         errorMessage: failure.message,
       ),
-      (post) => state = state.copyWith(
-        status: AnimalPostViewStatus.loaded,
-        selectedPost: post,
-      ),
+      (post) {
+        // Determine if current user has already requested — we check via
+        // the adoptionRequests list. The userId comparison happens in the UI
+        // using the current user session, so here we just load the post.
+        state = state.copyWith(
+          status: AnimalPostViewStatus.loaded,
+          selectedPost: post,
+        );
+      },
     );
   }
 
@@ -67,6 +79,62 @@ class AnimalPostViewModel extends Notifier<AnimalPostState> {
         myAdoptions: adoptions,
       ),
     );
+  }
+
+  /// Returns true on success, false on failure.
+  /// Refreshes the post after sending so button state updates.
+  Future<bool> requestAdoption(String postId) async {
+    state = state.copyWith(isRequestLoading: true);
+    final result =
+        await _requestAdoptionUsecase(RequestAdoptionParams(postId: postId));
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isRequestLoading: false,
+          errorMessage: failure.message,
+        );
+        return false;
+      },
+      (_) async {
+        // Refresh the post so adoptionRequests list is up to date
+        await getPostById(postId);
+        state = state.copyWith(
+          isRequestLoading: false,
+          hasRequested: true,
+          status: AnimalPostViewStatus.requestSent,
+        );
+        return true;
+      },
+    );
+  }
+
+  /// Returns true on success, false on failure.
+  Future<bool> cancelAdoptionRequest(String postId) async {
+    state = state.copyWith(isRequestLoading: true);
+    final result = await _cancelAdoptionRequestUsecase(
+        CancelAdoptionRequestParams(postId: postId));
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isRequestLoading: false,
+          errorMessage: failure.message,
+        );
+        return false;
+      },
+      (_) async {
+        await getPostById(postId);
+        state = state.copyWith(
+          isRequestLoading: false,
+          hasRequested: false,
+          status: AnimalPostViewStatus.requestCancelled,
+        );
+        return true;
+      },
+    );
+  }
+
+  void setHasRequested(bool value) {
+    state = state.copyWith(hasRequested: value);
   }
 
   // Filter methods

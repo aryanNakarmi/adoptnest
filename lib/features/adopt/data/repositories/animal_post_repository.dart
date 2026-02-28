@@ -63,8 +63,7 @@ class AnimalPostRepository implements IAnimalPostRepository {
   }
 
   @override
-  Future<Either<Failure, AnimalPostEntity>> getAnimalPostById(
-      String postId) async {
+  Future<Either<Failure, AnimalPostEntity>> getAnimalPostById(String postId) async {
     if (await _networkInfo.isConnected) {
       try {
         final remote = await _remoteDataSource.getAnimalPostById(postId);
@@ -82,8 +81,7 @@ class AnimalPostRepository implements IAnimalPostRepository {
     }
   }
 
-  Future<Either<Failure, AnimalPostEntity>> _getCachedPostById(
-      String postId) async {
+  Future<Either<Failure, AnimalPostEntity>> _getCachedPostById(String postId) async {
     try {
       final local = await _localDataSource.getAnimalPostById(postId);
       if (local != null) return Right(local.toEntity());
@@ -104,6 +102,32 @@ class AnimalPostRepository implements IAnimalPostRepository {
       }
     } else {
       return Left(NetworkFailure(message: 'No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> requestAdoption(String postId) async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure(message: 'No internet connection'));
+    }
+    try {
+      await _remoteDataSource.requestAdoption(postId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ApiFailure(message: 'Failed to send adoption request: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> cancelAdoptionRequest(String postId) async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure(message: 'No internet connection'));
+    }
+    try {
+      await _remoteDataSource.cancelAdoptionRequest(postId);
+      return const Right(null);
+    } catch (e) {
+      return Left(ApiFailure(message: 'Failed to cancel adoption request: $e'));
     }
   }
 }

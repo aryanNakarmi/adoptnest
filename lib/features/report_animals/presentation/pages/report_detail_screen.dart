@@ -1,14 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adoptnest/app/themes/font_data.dart';
 import 'package:adoptnest/core/api/api_endpoints.dart';
 import 'package:adoptnest/features/report_animals/presentation/view_model/animal_report_viewmodel.dart';
 import 'package:adoptnest/features/report_animals/presentation/state/animal_report_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
   final String? initialSpecies;
   final String? initialLocation;
+  final double? initialLocationLat;
+  final double? initialLocationLng;
   final String? initialImageUrl;
   final String? initialDescription;
   final String? initialStatus;
@@ -18,6 +21,8 @@ class ReportDetailScreen extends ConsumerStatefulWidget {
     required this.reportId,
     this.initialSpecies,
     this.initialLocation,
+    this.initialLocationLat,
+    this.initialLocationLng,
     this.initialImageUrl,
     this.initialDescription,
     this.initialStatus,
@@ -28,42 +33,48 @@ class ReportDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
-  late bool isDeleting = false;
+  bool isDeleting = false;
 
   String _getFullImageUrl(String imagePath) {
-    if (imagePath.isEmpty || imagePath.startsWith('http')) {
-      return imagePath;
-    }
+    if (imagePath.isEmpty || imagePath.startsWith('http')) return imagePath;
     return '${ApiEndpoints.baseUrl.replaceAll('/api/v1', '')}'
         '${imagePath.startsWith('/') ? '' : '/'}$imagePath';
   }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return Colors.orange;
       case 'approved':
         return Colors.green;
       case 'rejected':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Colors.orange;
+    }
+  }
+
+  Future<void> _openOnMap() async {
+    final lat = widget.initialLocationLat;
+    final lng = widget.initialLocationLng;
+    if (lat == null || lng == null) return;
+    final uri = Uri.parse(
+        'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=18/$lat/$lng');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (_) => AlertDialog(
         title: const Text('Delete Report'),
         content: Text(
           'Are you sure you want to delete the ${widget.initialSpecies} report? This action cannot be undone.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
@@ -79,45 +90,39 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
 
   Future<void> _deleteReport() async {
     setState(() => isDeleting = true);
-
     try {
-      final viewModel = ref.read(animalReportViewModelProvider.notifier);
-      final success = await viewModel.deleteReport(widget.reportId);
-
+      final success = await ref
+          .read(animalReportViewModelProvider.notifier)
+          .deleteReport(widget.reportId);
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Report deleted successfully'),
-            backgroundColor: Colors.green,
-          ),
+              content: Text('Report deleted successfully'),
+              backgroundColor: Colors.green),
         );
-        Navigator.pop(context, true); // Return true to indicate deletion
+        Navigator.pop(context, true);
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Failed to delete report'),
-            backgroundColor: Colors.red,
-          ),
+              content: Text('Failed to delete report'),
+              backgroundColor: Colors.red),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => isDeleting = false);
-      }
+      if (mounted) setState(() => isDeleting = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final statusStr = widget.initialStatus ?? 'pending';
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -125,10 +130,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
         backgroundColor: Colors.transparent,
         leading: Container(
           margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
+          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
@@ -137,10 +139,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
         actions: [
           Container(
             margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
+            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
             child: IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: isDeleting ? null : _showDeleteConfirmation,
@@ -152,7 +151,6 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
             Stack(
               children: [
                 Container(
@@ -164,130 +162,103 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                       ? Image.network(
                           _getFullImageUrl(widget.initialImageUrl!),
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                size: 60,
-                                color: Colors.grey[600],
-                              ),
-                            );
-                          },
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Icon(Icons.image_not_supported_outlined,
+                                size: 60, color: Colors.grey[600]),
+                          ),
                         )
                       : Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            size: 60,
-                            color: Colors.grey[600],
-                          ),
-                        ),
+                          child: Icon(Icons.image_outlined,
+                              size: 60, color: Colors.grey[600])),
                 ),
-                // Status Badge
                 Positioned(
                   bottom: 12,
                   left: 12,
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(widget.initialStatus ?? 'pending'),
+                      color: _getStatusColor(statusStr),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      (widget.initialStatus ?? 'pending')
-                          .replaceFirst(
-                            (widget.initialStatus ?? 'pending')[0],
-                            (widget.initialStatus ?? 'pending')[0]
-                                .toUpperCase(),
-                          )
-                          .toLowerCase()
-                          .replaceFirstMapped(
-                              RegExp(r'^.'), (m) => m.group(0)!.toUpperCase()),
+                      statusStr[0].toUpperCase() + statusStr.substring(1),
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12),
                     ),
                   ),
                 ),
               ],
             ),
-
-            // Content Section
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Species Title
                   Text(
                     widget.initialSpecies ?? 'Unknown',
-                    style: FontData.header1.copyWith(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: FontData.header1
+                        .copyWith(fontSize: 28, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 12),
-
-                  // Location
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.location_on, color: Colors.red, size: 20),
+                      const Icon(Icons.location_on, color: Colors.red, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          widget.initialLocation ?? 'Unknown location',
-                          style: FontData.body1.copyWith(
-                            color: Colors.grey[700],
-                            fontSize: 16,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.initialLocation ?? 'Unknown location',
+                              style: FontData.body1
+                                  .copyWith(color: Colors.grey[700], fontSize: 16),
+                            ),
+                            if (widget.initialLocationLat != null &&
+                                widget.initialLocationLng != null)
+                              GestureDetector(
+                                onTap: _openOnMap,
+                                child: const Text(
+                                  'Open on map ↗',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-
-                  // Divider
                   Divider(color: Colors.grey[300]),
                   const SizedBox(height: 20),
-
-                  // Description Section
                   if (widget.initialDescription != null &&
-                      widget.initialDescription!.isNotEmpty)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Description',
-                          style: FontData.header3.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.initialDescription!,
-                          style: FontData.body2.copyWith(
-                            color: Colors.grey[700],
-                            height: 1.6,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Divider(color: Colors.grey[300]),
-                        const SizedBox(height: 20),
-                      ],
+                      widget.initialDescription!.isNotEmpty) ...[
+                    Text('Description',
+                        style: FontData.header3
+                            .copyWith(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.initialDescription!,
+                      style: FontData.body2
+                          .copyWith(color: Colors.grey[700], height: 1.6),
                     ),
-
-                  // Additional Info
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey[300]),
+                    const SizedBox(height: 20),
+                  ],
                   Row(
                     children: [
-                      Icon(Icons.calendar_today, color: Colors.grey, size: 16),
+                      const Icon(Icons.calendar_today, color: Colors.grey, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        'Report ID: ${widget.reportId.substring(0, 8)}...',
-                        style: FontData.body2.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                        'Report ID: ${widget.reportId.length > 8 ? widget.reportId.substring(0, 8) : widget.reportId}...',
+                        style: FontData.body2.copyWith(color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -305,10 +276,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Colors.red),
-                  ),
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red)),
                 ),
               ),
             )

@@ -12,4 +12,6 @@ abstract interface class IAnimalPostRemoteDataSource {
   Future<List<AnimalPostApiModel>> getAllAnimalPosts();
   Future<AnimalPostApiModel?> getAnimalPostById(String postId);
   Future<List<AnimalPostApiModel>> getMyAdoptions();
+  Future<void> requestAdoption(String postId);
+  Future<void> cancelAdoptionRequest(String postId);
 }

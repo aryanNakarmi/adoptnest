@@ -11,10 +11,10 @@ class ApiEndpoints {
   // // For iOS Simulator use: 'http://localhost:5000/api/v1'
   // // For Physical Device use your computer's IP: 'http://192.168.x.x:5000/api/v1'
 
-static const bool isPhysicalDevice = true;
+static const bool isPhysicalDevice = false;
 
   // static const String compIpAddress = "192.168.1.7";  //for home
-  static const String compIpAddress = "192.168.1.6"; //windows hotspot
+  static const String compIpAddress = "10.28.244.197"; //windows hotspot
 
   static String get baseUrl {
     if (isPhysicalDevice) {
@@ -77,6 +77,11 @@ static const String allAnimalPosts = '/animal-posts';
 
 static String animalPostById(String id) => '/animal-posts/$id';
 static const String myAdoptions = '/animal-posts/my-adoptions';
+
+  // ── Adoption Requests ──
+  static String requestAdoption(String id) => '/animal-posts/$id/request-adoption';
+  static String cancelAdoptionRequest(String id) => '/animal-posts/$id/request-adoption';
+
 
 // =================== Chat ===================
 static const String myChat = '/chats/my-chat';

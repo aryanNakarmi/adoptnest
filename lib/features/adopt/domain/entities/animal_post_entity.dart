@@ -5,6 +5,25 @@ enum AnimalPostStatus {
   adopted,
 }
 
+class AdoptionRequestEntity extends Equatable {
+  final String userId;
+  final String fullName;
+  final String email;
+  final String? profilePicture;
+  final DateTime requestedAt;
+
+  const AdoptionRequestEntity({
+    required this.userId,
+    required this.fullName,
+    required this.email,
+    this.profilePicture,
+    required this.requestedAt,
+  });
+
+  @override
+  List<Object?> get props => [userId, fullName, email, profilePicture, requestedAt];
+}
+
 class AnimalPostEntity extends Equatable {
   final String? postId;
   final String species;
@@ -16,6 +35,7 @@ class AnimalPostEntity extends Equatable {
   final List<String> photos;
   final AnimalPostStatus status;
   final AdoptedByEntity? adoptedBy;
+  final List<AdoptionRequestEntity> adoptionRequests;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -30,6 +50,7 @@ class AnimalPostEntity extends Equatable {
     required this.photos,
     required this.status,
     this.adoptedBy,
+    this.adoptionRequests = const [],
     required this.createdAt,
     this.updatedAt,
   });
@@ -46,6 +67,7 @@ class AnimalPostEntity extends Equatable {
         photos,
         status,
         adoptedBy,
+        adoptionRequests,
         createdAt,
         updatedAt,
       ];
