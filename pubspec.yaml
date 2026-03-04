@@ -17,6 +17,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   smooth_page_indicator: ^1.2.1
 
+  # Sensor packages
+  sensors_plus: ^6.1.1
+  proximity_sensor: ^1.0.5
+  light_sensor: ^3.0.1
+
   # State Management
   flutter_riverpod: ^3.0.3
   riverpod_annotation: ^3.0.3

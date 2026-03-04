@@ -30,13 +30,16 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
         ref.read(animalPostViewModelProvider.notifier).clearFilters();
         _searchController.clear();
         if (_tabController.index == 1) {
-          ref.read(animalPostViewModelProvider.notifier).getMyAdoptions();
+          ref.read(animalPostViewModelProvider.notifier).getMyAdoptions(); // ✅ on tab switch
+        } else {
+          ref.read(animalPostViewModelProvider.notifier).getAllPosts(); // ✅ refresh all posts too
         }
       }
     });
-    Future.microtask(
-      () => ref.read(animalPostViewModelProvider.notifier).getAllPosts(),
-    );
+    Future.microtask(() async {
+      await ref.read(animalPostViewModelProvider.notifier).getAllPosts();
+      await ref.read(animalPostViewModelProvider.notifier).getMyAdoptions(); // ✅ load on start
+    });
   }
 
   @override
@@ -127,7 +130,6 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  // Species dropdown chip
                   _FilterDropdown(
                     label: 'Species',
                     value: state.speciesFilter,
@@ -135,7 +137,6 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                     onChanged: vm.setSpeciesFilter,
                   ),
                   const SizedBox(width: 8),
-                  // Gender dropdown chip
                   _FilterDropdown(
                     label: 'Gender',
                     value: state.genderFilter,
@@ -143,14 +144,12 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                     onChanged: vm.setGenderFilter,
                   ),
                   const SizedBox(width: 8),
-                  // Status dropdown chip
                   _FilterDropdown(
                     label: 'Status',
                     value: state.statusFilter,
                     options: _statuses,
                     onChanged: vm.setStatusFilter,
                   ),
-                  // Clear all
                   if (state.speciesFilter != 'All' ||
                       state.genderFilter != 'All' ||
                       state.statusFilter != 'All') ...[
@@ -252,7 +251,9 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                           )
                         : RefreshIndicator(
                             color: Colors.red,
-                            onRefresh: vm.getAllPosts,
+                            onRefresh: _tabController.index == 0
+                                ? vm.getAllPosts
+                                : vm.getMyAdoptions, // ✅ refresh correct list
                             child: GridView.builder(
                               padding: const EdgeInsets.all(12),
                               gridDelegate:
@@ -269,8 +270,8 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                   onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) =>
-                                          AdoptDetailScreen(postId: post.postId ?? ''),
+                                      builder: (_) => AdoptDetailScreen(
+                                          postId: post.postId ?? ''),
                                     ),
                                   ),
                                   child: Container(
@@ -304,20 +305,22 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                         _getFullImageUrl(
                                                             post.photos.first),
                                                         fit: BoxFit.cover,
-                                                        errorBuilder: (_, __, ___) =>
+                                                        errorBuilder: (_,
+                                                                __,
+                                                                ___) =>
                                                             const Center(
                                                           child: Icon(
                                                               Icons.pets,
-                                                              color: Colors
-                                                                  .grey),
+                                                              color:
+                                                                  Colors.grey),
                                                         ),
                                                       )
                                                     : const Center(
                                                         child: Icon(Icons.pets,
-                                                            color: Colors.grey),
+                                                            color:
+                                                                Colors.grey),
                                                       ),
                                               ),
-                                              // Photo count
                                               if (post.photos.length > 1)
                                                 Positioned(
                                                   top: 6,
@@ -344,7 +347,6 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                     ),
                                                   ),
                                                 ),
-                                              // Status badge
                                               Positioned(
                                                 top: 6,
                                                 right: 6,
@@ -374,7 +376,6 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                   ),
                                                 ),
                                               ),
-                                              // Adopted overlay
                                               if (post.status ==
                                                   AnimalPostStatus.adopted)
                                                 Positioned.fill(
@@ -395,7 +396,8 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                           // Info
                                           Expanded(
                                             child: Padding(
-                                              padding: const EdgeInsets.all(8),
+                                              padding:
+                                                  const EdgeInsets.all(8),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -414,7 +416,8 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                   Text(
                                                     '${post.species} • ${post.gender} • ${post.age}m',
                                                     style: TextStyle(
-                                                        color: Colors.grey[600],
+                                                        color:
+                                                            Colors.grey[600],
                                                         fontSize: 11),
                                                     maxLines: 1,
                                                     overflow:
@@ -424,7 +427,8 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                   Text(
                                                     post.location,
                                                     style: TextStyle(
-                                                        color: Colors.grey[500],
+                                                        color:
+                                                            Colors.grey[500],
                                                         fontSize: 11),
                                                     maxLines: 1,
                                                     overflow:
@@ -432,9 +436,11 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                                   ),
                                                   const Spacer(),
                                                   Text(
-                                                    _formatDate(post.createdAt),
+                                                    _formatDate(
+                                                        post.createdAt),
                                                     style: TextStyle(
-                                                        color: Colors.grey[400],
+                                                        color:
+                                                            Colors.grey[400],
                                                         fontSize: 10),
                                                   ),
                                                 ],
@@ -490,7 +496,8 @@ class _FilterDropdown extends StatelessWidget {
           value: value,
           isDense: true,
           icon: Icon(Icons.keyboard_arrow_down,
-              size: 16, color: isActive ? Colors.white : Colors.grey[700]),
+              size: 16,
+              color: isActive ? Colors.white : Colors.grey[700]),
           style: TextStyle(
             fontSize: 13,
             color: isActive ? Colors.white : Colors.grey[800],
@@ -501,7 +508,8 @@ class _FilterDropdown extends StatelessWidget {
             return DropdownMenuItem(
               value: o,
               child: Text(o == 'All' ? label : o,
-                  style: const TextStyle(color: Colors.black87, fontSize: 13)),
+                  style: const TextStyle(
+                      color: Colors.black87, fontSize: 13)),
             );
           }).toList(),
           onChanged: (v) => onChanged(v ?? 'All'),

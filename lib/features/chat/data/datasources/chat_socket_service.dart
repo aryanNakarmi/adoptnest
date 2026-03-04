@@ -13,7 +13,7 @@ class ChatSocketService {
 
   // Change this to match your ApiEndpoints base URL (without /api/v1)
   // static const String _socketUrl = 'http://10.0.2.2:5050';
-  static const String _socketUrl = 'http://192.168.137.78';
+  static const String _socketUrl = 'http://192.168.137.1';
   // Physical device: 'http://192.168.x.x:5050'
 
   bool get isConnected => _socket?.connected ?? false;
