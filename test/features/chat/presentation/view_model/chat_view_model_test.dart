@@ -130,6 +130,7 @@ void main() {
         try { c.dispose(); } catch (_) {}
       });
       await c.read(chatViewModelProvider.notifier).loadChat();
+      await Future.delayed(Duration.zero); // flush async fold callback
 
       final state = c.read(chatViewModelProvider);
       expect(state.status, ChatStatus.loaded);
@@ -147,6 +148,7 @@ void main() {
         try { c.dispose(); } catch (_) {}
       });
       await c.read(chatViewModelProvider.notifier).loadChat();
+      await Future.delayed(Duration.zero); // flush async fold callback
 
       expect(c.read(chatViewModelProvider).status, ChatStatus.error);
     });
@@ -161,6 +163,7 @@ void main() {
       });
       await c.read(chatViewModelProvider.notifier).loadChat();
 
+      await Future.delayed(Duration.zero); // flush async socket setup
       verify(() => mockSocket.connect()).called(1);
       verify(() => mockSocket.joinChat('chat-1')).called(1);
     });
@@ -239,6 +242,7 @@ void main() {
         try { c.dispose(); } catch (_) {}
       });
       await c.read(chatViewModelProvider.notifier).loadChat();
+      await Future.delayed(Duration.zero); // flush async fold callback
       expect(c.read(chatViewModelProvider).status, ChatStatus.error);
 
       // clearError should not throw
