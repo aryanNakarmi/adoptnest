@@ -36,7 +36,8 @@ void main() {
     testWidgets('TW-36: renders Report an Animal header', (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      // Use a finite duration to avoid pending Dio timer from MapLocationPicker
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.text('Report an Animal'), findsOneWidget);
     });
@@ -44,7 +45,7 @@ void main() {
     testWidgets('TW-37: shows species text field', (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.byType(TextFormField), findsWidgets);
     });
@@ -53,7 +54,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.byIcon(Icons.camera_alt_outlined), findsOneWidget);
     });
@@ -61,7 +62,7 @@ void main() {
     testWidgets('TW-39: Submit Report button is present', (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.text('Submit Report'), findsOneWidget);
     });
@@ -69,20 +70,23 @@ void main() {
     testWidgets('TW-40: Clear Form button is present', (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.text('Clear Form'), findsOneWidget);
     });
 
-    testWidgets(
-        'TW-41: shows species validation error when submitting empty form',
+    testWidgets('TW-41: shows species validation error when submitting empty form',
         (tester) async {
       await tester.pumpWidget(
           buildReportAnimalScreen(const AnimalReportState()));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
-      await tester.tap(find.text('Submit Report'));
+      // Scroll to Submit button and tap
+      final submitBtn = find.widgetWithText(ElevatedButton, 'Submit Report');
+      await tester.ensureVisible(submitBtn);
       await tester.pump();
+      await tester.tap(submitBtn);
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.text('Please enter animal species'), findsOneWidget);
     });
@@ -91,7 +95,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(buildReportAnimalScreen(
           const AnimalReportState(status: AnimalReportViewStatus.loading)));
-      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
 
       expect(find.byType(CircularProgressIndicator), findsWidgets);
     });

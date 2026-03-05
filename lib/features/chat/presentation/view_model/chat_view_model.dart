@@ -17,6 +17,7 @@ class ChatViewModel extends Notifier<ChatState> {
   late final ChatSocketService _socketService;
 
   Timer? _typingTimer;
+  String? _activeChatId; // ← cached so onDispose never reads state
 
   @override
   ChatState build() {
@@ -60,6 +61,8 @@ class ChatViewModel extends Notifier<ChatState> {
         final chat = data['chat'] as ChatEntity;
         final messages = data['messages'] as List<MessageEntity>;
         final unreadCount = data['unreadCount'] as int;
+
+        _activeChatId = chat.id; // ← cache before any await
 
         state = state.copyWith(
           status: ChatStatus.loaded,
@@ -194,8 +197,9 @@ class ChatViewModel extends Notifier<ChatState> {
 
   // =================== Cleanup ===================
   void _cleanupSocket() {
-    if (state.chat != null) {
-      _socketService.leaveChat(state.chat!.id);
+    // Use cached ID — never access state inside onDispose (Riverpod forbids it)
+    if (_activeChatId != null) {
+      _socketService.leaveChat(_activeChatId!);
     }
     _socketService.removeAllListeners();
   }
