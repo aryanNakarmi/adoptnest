@@ -126,7 +126,7 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                       gridDelegate:
                           SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: isTablet ? 3 : 2,
-                        childAspectRatio: isTablet ? 1.5 : 0.88,
+                        childAspectRatio: isTablet ? 1.5 : 0.8,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),

@@ -25,14 +25,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   // ─── Accelerometer ───────────────────────────────────────────
   StreamSubscription<UserAccelerometerEvent>? _accelSubscription;
-  static const double _shakeThreshold = 25.0;
+  static const double _shakeThreshold = 15.0;
   DateTime? _lastShakeTime;
 
   // ─── Proximity ───────────────────────────────────────────────
   StreamSubscription<int>? _proximitySubscription;
   bool _dialogShowing = false;
-  bool _wasNear = false;
-  bool _firstEvent = true; // ignore initial sensor reading on startup
+  int _nearCount = 0; // debounce counter
+  bool _firstEvent = true;
 
   @override
   void initState() {
@@ -74,22 +74,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       _proximitySubscription = ProximitySensor.events.listen((int event) {
-        final isNear = event < 4;
-
-        // Skip the very first event (startup reading)
+        // Skip startup reading
         if (_firstEvent) {
           _firstEvent = false;
-          _wasNear = isNear;
           return;
         }
 
-        // Only trigger when it CHANGES from far → near
-        if (isNear && !_wasNear && !_dialogShowing) {
-          _dialogShowing = true;
-          _showLogoutDialog();
-        }
+        // Samsung A54: values < 5 = near (covered), 5+ = far
+        final isNear = event < 5;
 
-        _wasNear = isNear;
+        if (isNear) {
+          _nearCount++;
+          // Require 3 consecutive near readings to avoid false triggers
+          if (_nearCount >= 3 && !_dialogShowing) {
+            _dialogShowing = true;
+            _nearCount = 0;
+            _showLogoutDialog();
+          }
+        } else {
+          // Reset counter when sensor goes far
+          _nearCount = 0;
+        }
       });
     });
   }

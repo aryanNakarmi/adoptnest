@@ -260,7 +260,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: isTablet ? 3 : 2,
-                                childAspectRatio: isTablet ? 1.5 : 0.85,
+                                childAspectRatio: isTablet ? 1.5 : 0.75,
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
                               ),

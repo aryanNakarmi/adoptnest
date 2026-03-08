@@ -62,10 +62,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     Text(fullName, style: FontData.header1),
                   ],
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications_none_rounded, size: 28),
-                ),
+                
               ],
             ),
           ),
