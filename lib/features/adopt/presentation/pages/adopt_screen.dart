@@ -30,15 +30,15 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
         ref.read(animalPostViewModelProvider.notifier).clearFilters();
         _searchController.clear();
         if (_tabController.index == 1) {
-          ref.read(animalPostViewModelProvider.notifier).getMyAdoptions(); // ✅ on tab switch
+          ref.read(animalPostViewModelProvider.notifier).getMyAdoptions();
         } else {
-          ref.read(animalPostViewModelProvider.notifier).getAllPosts(); // ✅ refresh all posts too
+          ref.read(animalPostViewModelProvider.notifier).getAllPosts();
         }
       }
     });
     Future.microtask(() async {
       await ref.read(animalPostViewModelProvider.notifier).getAllPosts();
-      await ref.read(animalPostViewModelProvider.notifier).getMyAdoptions(); // ✅ load on start
+      await ref.read(animalPostViewModelProvider.notifier).getMyAdoptions();
     });
   }
 
@@ -62,6 +62,7 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
   Widget build(BuildContext context) {
     final state = ref.watch(animalPostViewModelProvider);
     final vm = ref.read(animalPostViewModelProvider.notifier);
+    final isTablet = MediaQuery.of(context).size.width > 600;
 
     final displayPosts = _tabController.index == 0
         ? state.filteredPosts
@@ -253,13 +254,13 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                             color: Colors.red,
                             onRefresh: _tabController.index == 0
                                 ? vm.getAllPosts
-                                : vm.getMyAdoptions, // ✅ refresh correct list
+                                : vm.getMyAdoptions,
                             child: GridView.builder(
                               padding: const EdgeInsets.all(12),
                               gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.72,
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: isTablet ? 3 : 2,
+                                childAspectRatio: isTablet ? 1.5 : 0.85,
                                 crossAxisSpacing: 12,
                                 mainAxisSpacing: 12,
                               ),
@@ -292,12 +293,13 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           // Image
                                           Stack(
                                             children: [
                                               Container(
-                                                height: 130,
+                                                height: isTablet ? 150 : 130,
                                                 width: double.infinity,
                                                 color: Colors.grey[200],
                                                 child: post.photos.isNotEmpty
@@ -393,58 +395,52 @@ class _AdoptScreenState extends ConsumerState<AdoptScreen>
                                             ],
                                           ),
 
-                                          // Info
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    post.breed,
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 13),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                  const SizedBox(height: 2),
-                                                  Text(
-                                                    '${post.species} • ${post.gender} • ${post.age}m',
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[600],
-                                                        fontSize: 11),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                  const SizedBox(height: 2),
-                                                  Text(
-                                                    post.location,
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[500],
-                                                        fontSize: 11),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                  const Spacer(),
-                                                  Text(
-                                                    _formatDate(
-                                                        post.createdAt),
-                                                    style: TextStyle(
-                                                        color:
-                                                            Colors.grey[400],
-                                                        fontSize: 10),
-                                                  ),
-                                                ],
-                                              ),
+                                          // Info — no Expanded, no Spacer
+                                          Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  post.breed,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 13),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  '${post.species} • ${post.gender} • ${post.age}m',
+                                                  style: TextStyle(
+                                                      color: Colors.grey[600],
+                                                      fontSize: 11),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  post.location,
+                                                  style: TextStyle(
+                                                      color: Colors.grey[500],
+                                                      fontSize: 11),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  _formatDate(post.createdAt),
+                                                  style: TextStyle(
+                                                      color: Colors.grey[400],
+                                                      fontSize: 10),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],

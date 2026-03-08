@@ -48,6 +48,7 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
     final userSession = ref.watch(userSessionServiceProvider);
     final userId = userSession.getCurrentUserId() ?? '';
     final state = ref.watch(animalReportViewModelProvider);
+    final isTablet = MediaQuery.of(context).size.width > 600;
 
     return Scaffold(
       appBar: AppBar(
@@ -123,9 +124,9 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                   : GridView.builder(
                       padding: const EdgeInsets.all(12),
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.75,
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: isTablet ? 3 : 2,
+                        childAspectRatio: isTablet ? 1.5 : 0.88,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                       ),
@@ -172,11 +173,12 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                               borderRadius: BorderRadius.circular(12),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Stack(
                                     children: [
                                       Container(
-                                        height: 120,
+                                        height: isTablet ? 140 : 120,
                                         width: double.infinity,
                                         color: Colors.grey[200],
                                         child: report.imageUrl.isNotEmpty
@@ -213,52 +215,52 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                                       ),
                                     ],
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            report.species,
-                                            style: FontData.body2
-                                                .copyWith(fontWeight: FontWeight.w600),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Icon(Icons.location_on,
-                                                  size: 12, color: Colors.grey[500]),
-                                              const SizedBox(width: 2),
-                                              Expanded(
-                                                child: Text(
-                                                  locationAddress,
-                                                  style: FontData.body2.copyWith(
-                                                      color: Colors.grey[600],
-                                                      fontSize: 11),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          if (report.description != null &&
-                                              report.description!.isNotEmpty)
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 4),
+                                  // Info — no Expanded, no Spacer
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          report.species,
+                                          style: FontData.body2
+                                              .copyWith(fontWeight: FontWeight.w600),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.location_on,
+                                                size: 12, color: Colors.grey[500]),
+                                            const SizedBox(width: 2),
+                                            Expanded(
                                               child: Text(
-                                                report.description!,
+                                                locationAddress,
                                                 style: FontData.body2.copyWith(
-                                                    color: Colors.grey[500],
+                                                    color: Colors.grey[600],
                                                     fontSize: 11),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
-                                        ],
-                                      ),
+                                          ],
+                                        ),
+                                        if (report.description != null &&
+                                            report.description!.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 4),
+                                            child: Text(
+                                              report.description!,
+                                              style: FontData.body2.copyWith(
+                                                  color: Colors.grey[500],
+                                                  fontSize: 11),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
                                 ],

@@ -13,19 +13,16 @@ import 'package:adoptnest/features/adopt/domain/usecases/request_adoption_usecas
 import 'package:adoptnest/features/adopt/presentation/state/animal_post_state.dart';
 import 'package:adoptnest/features/adopt/presentation/view_model/animal_post_viewmodel.dart';
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
 class MockGetAllPosts extends Mock implements GetAllAnimalPostsUsecase {}
 class MockGetPostById extends Mock implements GetAnimalPostByIdUsecase {}
 class MockGetMyAdoptions extends Mock implements GetMyAdoptionsUsecase {}
 class MockRequestAdoption extends Mock implements RequestAdoptionUsecase {}
 class MockCancelAdoption extends Mock implements CancelAdoptionRequestUsecase {}
 
-// ─── Fake params ─────────────────────────────────────────────────────────────
 class FakeGetByIdParams extends Fake implements GetAnimalPostByIdParams {}
 class FakeRequestParams extends Fake implements RequestAdoptionParams {}
 class FakeCancelParams extends Fake implements CancelAdoptionRequestParams {}
 
-// ─── Helper ──────────────────────────────────────────────────────────────────
 AnimalPostEntity makePost({String id = 'post-1', String species = 'Dog'}) =>
     AnimalPostEntity(
       postId: id,
@@ -84,9 +81,8 @@ void main() {
         cancel: mockCancel,
       );
 
-  // ── getAllPosts ────────────────────────────────────────────────────────────
   group('AnimalPostViewModel - getAllPosts()', () {
-    test('TC-APVM-01: sets loaded state with posts on success', () async {
+    test('sets loaded state with posts on success', () async {
       final posts = [makePost(id: 'p1'), makePost(id: 'p2', species: 'Cat')];
       when(() => mockGetAll()).thenAnswer((_) async => Right(posts));
 
@@ -99,7 +95,7 @@ void main() {
       expect(state.posts.length, 2);
     });
 
-    test('TC-APVM-02: sets error on failure', () async {
+    test('sets error on failure', () async {
       when(() => mockGetAll())
           .thenAnswer((_) async => Left(ApiFailure(message: 'Server down')));
 
@@ -113,9 +109,8 @@ void main() {
     });
   });
 
-  // ── getPostById ───────────────────────────────────────────────────────────
   group('AnimalPostViewModel - getPostById()', () {
-    test('TC-APVM-03: sets selectedPost on success', () async {
+    test('sets selectedPost on success', () async {
       final post = makePost(id: 'p-99');
       when(() => mockGetById(any())).thenAnswer((_) async => Right(post));
 
@@ -126,7 +121,7 @@ void main() {
       expect(c.read(animalPostViewModelProvider).selectedPost?.postId, 'p-99');
     });
 
-    test('TC-APVM-04: sets error when post not found', () async {
+    test('sets error when post not found', () async {
       when(() => mockGetById(any()))
           .thenAnswer((_) async => Left(ApiFailure(message: 'Not found')));
 
@@ -139,9 +134,8 @@ void main() {
     });
   });
 
-  // ── getMyAdoptions ────────────────────────────────────────────────────────
   group('AnimalPostViewModel - getMyAdoptions()', () {
-    test('TC-APVM-05: populates myAdoptions on success', () async {
+    test('populates myAdoptions on success', () async {
       final adoptions = [makePost(id: 'adopt-1')];
       when(() => mockGetMy()).thenAnswer((_) async => Right(adoptions));
 
@@ -152,7 +146,7 @@ void main() {
       expect(c.read(animalPostViewModelProvider).myAdoptions.length, 1);
     });
 
-    test('TC-APVM-06: sets error on failure', () async {
+    test('sets error on failure', () async {
       when(() => mockGetMy())
           .thenAnswer((_) async => Left(ApiFailure(message: 'Unauthorized')));
 
@@ -165,9 +159,8 @@ void main() {
     });
   });
 
-  // ── requestAdoption ───────────────────────────────────────────────────────
   group('AnimalPostViewModel - requestAdoption()', () {
-    test('TC-APVM-07: sets requestSent and hasRequested=true on success',
+    test('sets requestSent and hasRequested=true on success',
         () async {
       when(() => mockRequest(any()))
           .thenAnswer((_) async => Right<Failure, void>(null));
@@ -187,7 +180,7 @@ void main() {
           AnimalPostViewStatus.requestSent);
     });
 
-    test('TC-APVM-08: returns false and sets error on failure', () async {
+    test('returns false and sets error on failure', () async {
       when(() => mockRequest(any()))
           .thenAnswer((_) async => Left(ApiFailure(message: 'Already requested')));
 
@@ -203,9 +196,8 @@ void main() {
     });
   });
 
-  // ── cancelAdoptionRequest ─────────────────────────────────────────────────
   group('AnimalPostViewModel - cancelAdoptionRequest()', () {
-    test('TC-APVM-09: sets requestCancelled and hasRequested=false on success',
+    test('sets requestCancelled and hasRequested=false on success',
         () async {
       when(() => mockCancel(any()))
           .thenAnswer((_) async => Right<Failure, void>(null));
@@ -224,7 +216,7 @@ void main() {
           AnimalPostViewStatus.requestCancelled);
     });
 
-    test('TC-APVM-10: returns false and sets error on failure', () async {
+    test('returns false and sets error on failure', () async {
       when(() => mockCancel(any()))
           .thenAnswer((_) async => Left(ApiFailure(message: 'Not found')));
 
@@ -239,9 +231,8 @@ void main() {
     });
   });
 
-  // ── filters ───────────────────────────────────────────────────────────────
   group('AnimalPostViewModel - filter methods', () {
-    test('TC-APVM-11: setSpeciesFilter filters posts correctly', () async {
+    test(' setSpeciesFilter filters posts correctly', () async {
       final posts = [
         makePost(id: 'p1', species: 'Dog'),
         makePost(id: 'p2', species: 'Cat'),
@@ -260,7 +251,7 @@ void main() {
       expect(filtered.every((p) => p.species == 'Dog'), isTrue);
     });
 
-    test('TC-APVM-12: clearFilters resets all filters to All', () async {
+    test('clearFilters resets all filters to All', () async {
       final c = container();
       addTearDown(c.dispose);
       c.read(animalPostViewModelProvider.notifier).setSpeciesFilter('Cat');

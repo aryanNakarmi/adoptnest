@@ -78,7 +78,7 @@ void main() {
       );
 
   group('AuthViewModel - login()', () {
-    test('TC-AVM-01: sets authenticated on success', () async {
+    test('sets authenticated on success', () async {
       when(() => mockLogin(any())).thenAnswer((_) async => Right(fakeUser));
       final c = container(); addTearDown(c.dispose);
       await c.read(authViewModelProvider.notifier).login(email: 'john@example.com', password: 'pass123');
@@ -108,7 +108,7 @@ void main() {
   });
 
   group('AuthViewModel - register()', () {
-    test('TC-AVM-04: sets registered status on success', () async {
+    test(' sets registered status on success', () async {
       when(() => mockRegister(any())).thenAnswer((_) async => Right<Failure, bool>(true));
       final c = container(); addTearDown(c.dispose);
       await c.read(authViewModelProvider.notifier).register(fullName: 'Jane', email: 'jane@example.com', password: 'pass123');

@@ -31,6 +31,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // ─── Proximity ───────────────────────────────────────────────
   StreamSubscription<int>? _proximitySubscription;
   bool _dialogShowing = false;
+  bool _wasNear = false;
+  bool _firstEvent = true; // ignore initial sensor reading on startup
 
   @override
   void initState() {
@@ -69,12 +71,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _initProximity() {
-    _proximitySubscription = ProximitySensor.events.listen((int event) {
-      final isNear = event < 4;
-      if (isNear && !_dialogShowing) {
-        _dialogShowing = true;
-        _showLogoutDialog();
-      }
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      _proximitySubscription = ProximitySensor.events.listen((int event) {
+        final isNear = event < 4;
+
+        // Skip the very first event (startup reading)
+        if (_firstEvent) {
+          _firstEvent = false;
+          _wasNear = isNear;
+          return;
+        }
+
+        // Only trigger when it CHANGES from far → near
+        if (isNear && !_wasNear && !_dialogShowing) {
+          _dialogShowing = true;
+          _showLogoutDialog();
+        }
+
+        _wasNear = isNear;
+      });
     });
   }
 

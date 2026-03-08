@@ -7,7 +7,7 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>Adoptnest</string>
+	<string>AdoptNest</string>
 
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
@@ -63,17 +63,21 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 
-	<!--  Camera Permission -->
+	<!-- Camera Permission -->
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to the camera to capture photos of animals for rescue and reporting.</string>
 
-	<!--  Gallery Permission -->
+	<!-- Gallery Permission -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to select animal photos.</string>
 
+	<!-- Location - When In Use -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-<string>We use your location to identify where the animal was reported.</string>
+	<string>We use your location to identify where the animal was reported.</string>
 
+	<!-- Location - Always (background) -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We use your location to identify where the animal was reported.</string>
 
 </dict>
 </plist>

@@ -56,10 +56,26 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
     final lat = widget.initialLocationLat;
     final lng = widget.initialLocationLng;
     if (lat == null || lng == null) return;
-    final uri = Uri.parse(
-        'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=18/$lat/$lng');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    // Try geo: URI first (opens Maps app directly)
+    final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng');
+
+    if (await canLaunchUrl(geoUri)) {
+      await launchUrl(geoUri);
+    } else {
+      // Fallback to browser
+      final browserUri = Uri.parse(
+        'https://www.openstreetmap.org/?mlat=$lat&mlon=$lng#map=18/$lat/$lng',
+      );
+      try {
+        await launchUrl(browserUri, mode: LaunchMode.externalApplication);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not open map')),
+          );
+        }
+      }
     }
   }
 
@@ -130,7 +146,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
         backgroundColor: Colors.transparent,
         leading: Container(
           margin: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+          decoration: const BoxDecoration(
+              color: Colors.white, shape: BoxShape.circle),
           child: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
@@ -139,7 +156,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
         actions: [
           Container(
             margin: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+                color: Colors.white, shape: BoxShape.circle),
             child: IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: isDeleting ? null : _showDeleteConfirmation,
@@ -175,7 +193,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                   bottom: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: _getStatusColor(statusStr),
                       borderRadius: BorderRadius.circular(20),
@@ -205,7 +224,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.location_on, color: Colors.red, size: 20),
+                      const Icon(Icons.location_on,
+                          color: Colors.red, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -213,15 +233,15 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                           children: [
                             Text(
                               widget.initialLocation ?? 'Unknown location',
-                              style: FontData.body1
-                                  .copyWith(color: Colors.grey[700], fontSize: 16),
+                              style: FontData.body1.copyWith(
+                                  color: Colors.grey[700], fontSize: 16),
                             ),
                             if (widget.initialLocationLat != null &&
                                 widget.initialLocationLng != null)
                               GestureDetector(
                                 onTap: _openOnMap,
                                 child: const Text(
-                                  'Open on map ↗',
+                                  'Open on map ⇨',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.red,
@@ -254,11 +274,13 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                   ],
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, color: Colors.grey, size: 16),
+                      const Icon(Icons.calendar_today,
+                          color: Colors.grey, size: 16),
                       const SizedBox(width: 8),
                       Text(
                         'Report ID: ${widget.reportId.length > 8 ? widget.reportId.substring(0, 8) : widget.reportId}...',
-                        style: FontData.body2.copyWith(color: Colors.grey[600]),
+                        style:
+                            FontData.body2.copyWith(color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -277,7 +299,8 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> {
                   width: 20,
                   child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red)),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.red)),
                 ),
               ),
             )
